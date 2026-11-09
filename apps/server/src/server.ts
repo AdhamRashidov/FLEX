@@ -32,11 +32,14 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
-// TODO: Modullar route'lari shu yerga ulanadi
-// app.use('/api/v1/auth', authRoutes);
-// app.use('/api/v1/admin/stores', adminStoreRoutes);
-// app.use('/api/v1/store', storeRoutes);
-// app.use('/api/v1/shop', shopRoutes);
+import { authRoutes } from './modules/auth/index.js';
+import { storeRoutes, adminStoreRoutes, shopStoreRoutes } from './modules/store/index.js';
+
+// ── API Marshrutlari (v1) ──────────────────────
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/store', storeRoutes);
+app.use('/api/v1/admin/stores', adminStoreRoutes);
+app.use('/api/v1/shop', shopStoreRoutes);
 
 // ── 404 Handler ───────────────────────────────
 app.use((_req, res) => {
