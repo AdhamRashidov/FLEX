@@ -17,7 +17,7 @@ async function seed() {
         VALUES ($1, $2, $3, $4, $5)
         RETURNING id
       `, [123456789, 'Alisher', 'Navoiy', 'alisher_demo', 'uz']);
-      owner = res.rows[0];
+      owner = res.rows[0] ?? null;
       logger.info('Seed', `👤 Demo foydalanuvchi yaratildi: ID ${owner?.id}`);
     }
 
@@ -50,7 +50,7 @@ async function seed() {
         20000,
         'active'
       ]);
-      store = res.rows[0];
+      store = res.rows[0] ?? null;
       logger.info('Seed', `🏪 Demo do'kon yaratildi: Hosil Market (ID: ${store?.id})`);
     }
 
@@ -77,7 +77,7 @@ async function seed() {
           VALUES ($1, $2, $3, $4, $5)
           RETURNING id
         `, [store.id, cat.name, cat.slug, cat.emoji, cat.sort_order]);
-        existing = res.rows[0];
+        existing = res.rows[0] ?? null;
       }
       if (existing) {
         categoryMap.set(cat.slug, existing.id);
