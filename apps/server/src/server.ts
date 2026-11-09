@@ -38,12 +38,22 @@ app.get('/api/health', async (_req, res) => {
 
 import { authRoutes } from './modules/auth/index.js';
 import { storeRoutes, adminStoreRoutes, shopStoreRoutes } from './modules/store/index.js';
+import { storeCategoryRouter, shopCategoryRouter } from './modules/category/index.js';
+import { storeProductRouter, shopProductRouter } from './modules/product/index.js';
 
 // ── API Marshrutlari (v1) ──────────────────────
 app.use('/api/v1/auth', authRoutes);
+
+// Do'kon egasi / Admin boshqaruvi
 app.use('/api/v1/store', storeRoutes);
+app.use('/api/v1/store/categories', storeCategoryRouter);
+app.use('/api/v1/store/products', storeProductRouter);
 app.use('/api/v1/admin/stores', adminStoreRoutes);
+
+// Xaridor Mini App vitrinasi
 app.use('/api/v1/shop', shopStoreRoutes);
+app.use('/api/v1/shop/:storeSlug/categories', shopCategoryRouter);
+app.use('/api/v1/shop/:storeSlug/products', shopProductRouter);
 
 // ── 404 Handler ───────────────────────────────
 app.use((_req, res) => {
