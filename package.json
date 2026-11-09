@@ -1,0 +1,34 @@
+{
+  "name": "flex",
+  "private": true,
+  "version": "0.1.0",
+  "description": "FLEX — Flexible Marketplace Platform (Telegram Mini App)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w @flex/server",
+    "dev:client": "npm run dev -w @flex/client",
+    "dev:admin": "npm run dev -w @flex/admin",
+    "build": "npm run build -w @flex/shared && npm run build -w @flex/server && npm run build -w @flex/client && npm run build -w @flex/admin",
+    "build:server": "npm run build -w @flex/server",
+    "build:client": "npm run build -w @flex/client",
+    "build:admin": "npm run build -w @flex/admin",
+    "migrate": "npm run migrate -w @flex/server",
+    "migrate:create": "npm run migrate:create -w @flex/server",
+    "seed": "npm run seed -w @flex/server",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "clean": "rimraf apps/*/dist apps/*/node_modules packages/*/dist packages/*/node_modules node_modules"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "rimraf": "^6.0.0",
+    "prettier": "^3.4.0"
+  }
+}
