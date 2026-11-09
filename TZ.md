@@ -536,7 +536,22 @@ CREATE TABLE import_jobs (
     completed_at    TIMESTAMPTZ
 );
 
-CREATE INDEX idx_import_jobs_store ON import_jobs(store_id);
+#### `media_assets` — Rasmlarni deduplikatsiya qilish va Reference-Count (DRY)
+```sql
+CREATE TABLE media_assets (
+    id              BIGSERIAL PRIMARY KEY,
+    url             TEXT NOT NULL UNIQUE,
+    file_hash       VARCHAR(64) NOT NULL UNIQUE, -- SHA-256 xesh (kontent bo'yicha yagona)
+    storage_path    TEXT NOT NULL,               -- Diskdagi yoki R2 dagi jismoniy fayl yo'li
+    file_size       INTEGER NOT NULL,            -- Baytlarda hajmi
+    mime_type       VARCHAR(100) NOT NULL,       -- image/webp, image/jpeg va h.k.
+    reference_count INTEGER NOT NULL DEFAULT 1,  -- Nechta mahsulot ushbu rasmga bog'langan
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_media_assets_hash ON media_assets(file_hash);
+CREATE INDEX idx_media_assets_url ON media_assets(url);
 ```
 
 ---
@@ -780,32 +795,37 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 
 ## 10. Ishlanish bosqichlari (Roadmap)
 
-### BOSQICH 0: Poydevor (Foundation) — ~3 kun
+### BOSQICH 0: Poydevor (Foundation) — YAKUNLANDI ✅
 > Maqsad: Loyiha skeletini to'g'ri qurish, biror kod yozishdan oldin arxitektura tayyor bo'lishi
 
 - [x] TZ va CLAUDE.md yaratish
-- [ ] Git repo initsializatsiya, `.gitignore`, `tsconfig`, `eslint`, `prettier`
-- [ ] Backend loyiha strukturasini yaratish (papkalar, entry point)
-- [ ] Frontend loyiha strukturasini yaratish (Vite + React + Tailwind + shadcn)
-- [ ] PostgreSQL lokal yoki Neon.tech'da database yaratish
-- [ ] Migratsiya tizimini sozlash (`node-pg-migrate`)
-- [ ] Barcha jadvallar uchun migratsiya fayllarini yozish
-- [ ] Database ulanish utility (`db/pool.ts`)
-- [ ] Asosiy middleware'lar (error handler, logger, cors, rate limiter)
+- [x] Git repo initsializatsiya, remote GitHub ga ulash (`AdhamRashidov/FLEX.git`)
+- [x] Monorepo npm workspaces (`apps/server`, `apps/client`, `apps/admin`, `packages/shared`)
+- [x] TypeScript strict mode poydevori (tsconfig.base.json)
+- [x] PostgreSQL lokal baza yaratish, ulanish
+- [x] Migratsiya tizimini sozlash (`node-pg-migrate`)
+- [x] Barcha 16 ta jadval uchun migratsiya fayllarini yozish va bazaga qo'llash
+- [x] Database ulanish utility (`db/pool.ts` — raw pg pool, slow query alert, tx)
+- [x] Asosiy middleware'lar (error handler, request tracer, logger, cors, helmet)
+- [x] Demo seeder (`npm run seed` — Hosil Market, mahsulotlar va global katalog)
+- [x] Redis kesh infratuzilmasi (`infrastructure/cache/redis.ts` — Graceful Degradation)
+- [x] Media Asset Deduplication tizimi (`infrastructure/storage/media-storage.service.ts` — SHA-256 Reference Counting)
 
-### BOSQICH 1: Auth + Do'kon yaratish — ~2 kun
+### BOSQICH 1: Auth + Do'kon yaratish — YAKUNLANDI ✅
 > Maqsad: Birinchi do'konni yaratish va Telegram orqali kirish imkoniyati
 
-- [ ] Telegram InitData tekshiruvi (HMAC-SHA256)
-- [ ] JWT token generatsiya va tekshiruv
-- [ ] Auth middleware
-- [ ] User repository (CRUD)
-- [ ] Store repository (CRUD)
-- [ ] Super Admin: do'kon yaratish API
+- [x] Telegram InitData tekshiruvi (HMAC-SHA256, replay-attack va timing-attack himoyasi)
+- [x] JWT token generatsiya va tekshiruv (`jwt.ts`)
+- [x] Auth middleware va Guardlar (`requireAuth`, `optionalAuth`, `requireRole`, `resolveTenant`, `validateBody`)
+- [x] DDD Core qatlamlari (6 ta Entity, 6 ta Repository interfeysi)
+- [x] User repository (`PgUserRepository` — Raw SQL upsert)
+- [x] Store repository (`PgStoreRepository` — Raw SQL CRUD)
+- [x] Auth moduli (`/api/v1/auth/telegram`, `/api/v1/auth/me`)
+- [x] Store moduli (`/api/v1/store/profile`, `/api/v1/store/:storeId`, `/api/v1/shop/:storeSlug/info`, `/api/v1/admin/stores`)
 - [ ] Telegram bot webhook registration (dinamik)
 - [ ] Bot `/start` komandasi → Mini App tugmasi
 
-### BOSQICH 2: Mahsulotlar va kategoriyalar — ~3 kun
+### BOSQICH 2: Mahsulotlar va kategoriyalar — KEYINGI BOSQICH ⏳
 > Maqsad: Do'kon egasi mahsulotlarni qo'sha olishi va boshqarishi
 
 - [ ] Categories CRUD (API + frontend admin)

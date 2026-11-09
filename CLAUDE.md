@@ -22,6 +22,8 @@ o'tgan do'konlar ro'yxati / xaritada ko'rinadi.
 - **Language:** TypeScript (strict mode)
 - **Database driver:** `pg` (node-postgres) — **ORM ISHLATILMAYDI**
 - **SQL:** Barcha querylar qo'lda yoziladi (Raw SQL, parametrlashtirilgan)
+- **Kesh va Navbat:** Redis (`ioredis`) — Graceful Degradation (Redis o'chiq bo'lsa ham tizim qulamaydi)
+- **Media Asset Menejeri:** SHA-256 Content Hashing + Reference Counting (1 ta rasm 1000 mahsulotga, 100% DRY)
 - **Migratsiyalar:** `node-pg-migrate`
 - **Validatsiya:** `zod`
 - **Auth:** Telegram InitData HMAC-SHA256 tekshiruvi + JWT tokenlar
