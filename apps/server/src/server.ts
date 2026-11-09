@@ -15,6 +15,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(requestTracer);
 
+// ── Statik Fayllar (Rasmlar) ───────────────────
+import path from 'path';
+app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+
 // ── Health Check ──────────────────────────────
 app.get('/api/health', async (_req, res) => {
   try {

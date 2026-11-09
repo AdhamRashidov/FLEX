@@ -12,6 +12,8 @@ const envSchema = z.object({
   WEBHOOK_SECRET: z.string().optional(),
   MEDIA_STORAGE: z.enum(['local', 'cloudflare_r2', 'telegram_cdn']).default('local'),
   CORS_ORIGINS: z.string().default('http://localhost:5173,http://localhost:5174'),
+  REDIS_URL: z.string().default('redis://localhost:6379'),
+  REDIS_ENABLED: z.coerce.boolean().default(false),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -32,6 +34,10 @@ export const config = {
     webhookSecret: parsed.data.WEBHOOK_SECRET,
   },
   media: { storage: parsed.data.MEDIA_STORAGE },
+  redis: {
+    url: parsed.data.REDIS_URL,
+    enabled: parsed.data.REDIS_ENABLED,
+  },
   cors: { origins: parsed.data.CORS_ORIGINS.split(',').map((s) => s.trim()) },
   isDev: parsed.data.NODE_ENV === 'development',
   isProd: parsed.data.NODE_ENV === 'production',
