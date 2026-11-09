@@ -825,17 +825,17 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [ ] Telegram bot webhook registration (dinamik)
 - [ ] Bot `/start` komandasi → Mini App tugmasi
 
-### BOSQICH 2: Mahsulotlar va kategoriyalar — KEYINGI BOSQICH ⏳
+### BOSQICH 2: Mahsulotlar va kategoriyalar — BACKEND YAKUNLANDI ✅
 > Maqsad: Do'kon egasi mahsulotlarni qo'sha olishi va boshqarishi
 
-- [ ] Categories CRUD (API + frontend admin)
-- [ ] Products CRUD (API + frontend admin)
-- [ ] Rasm yuklash (Cloudflare R2 yoki TG CDN)
-- [ ] Mahsulotlar ro'yxati sahifasi (admin)
-- [ ] Mahsulot yaratish/tahrirlash formasi (admin)
-- [ ] Stock boshqaruvi (qoldiq, low stock alert)
+- [x] Categories CRUD API (Raw SQL, slug generation, reorder, active filter)
+- [x] Products CRUD API (Raw SQL, pagination with COUNT(*) OVER(), TSVECTOR search)
+- [x] Rasm yuklash va DRY Deduplication (SHA-256 xesh, reference-counting, avto-tozalash)
+- [x] Redis kesh integratsiyasi (tezkor katalog, invalidation on mutations)
+- [x] Stock boshqaruvi (qoldiq o'zgartirish, low stock alerts)
+- [ ] Frontend admin: Kategoriyalar va Mahsulotlar boshqaruvi
 
-### BOSQICH 3: Mijoz Mini App — ~3 kun
+### BOSQICH 3: Mijoz Mini App — KEYINGI BOSQICH ⏳
 > Maqsad: Xaridor mahsulotlarni ko'rib, savatga qo'shib, buyurtma bera olishi
 
 - [ ] Telegram Mini App SDK integratsiyasi
