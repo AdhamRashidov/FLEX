@@ -118,9 +118,9 @@ modules/product/
 - Paginatsiya: `?page=1&limit=20` (default limit: 20, max: 100)
 
 ### Git konvensiyalari
-- **Branch nomi:** `feature/product-crud`, `fix/order-validation`, `chore/migrations`
+- **Asosiy Dev muhit:** `adham` (barcha yangi kodlar, ishlab chiqish va faol commitlar doimiy shu branchda bo'ladi)
+- **Production muhit:** `main` (faqatgina hamma narsa toza va to'liq sinovdan o'tgandan keyin `adham` dan `main` ga merge qilinadi)
 - **Commit xabarlari:** Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`)
-- **PR:** Har bir feature alohida branchda ishlanadi
 
 ### Kodga izoh yozish
 - Barcha mavjud izohlar (comment/docstring) saqlanadi, o'chirilmaydi
