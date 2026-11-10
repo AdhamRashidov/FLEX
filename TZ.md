@@ -835,19 +835,20 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Stock boshqaruvi (qoldiq o'zgartirish, low stock alerts)
 - [ ] Frontend admin: Kategoriyalar va Mahsulotlar boshqaruvi
 
-### BOSQICH 3: Mijoz Mini App — KEYINGI BOSQICH ⏳
+### BOSQICH 3: Mijoz Mini App — BAJARILDI ✅
 > Maqsad: Xaridor mahsulotlarni ko'rib, savatga qo'shib, buyurtma bera olishi
 
-- [ ] Telegram Mini App SDK integratsiyasi
-- [ ] Bosh sahifa (kategoriyalar, mahsulotlar grid)
-- [ ] Kategoriya bo'yicha filterlash
-- [ ] Mahsulot qidirish
-- [ ] Mahsulot tafsilotlari sahifasi
-- [ ] Savat (qo'shish, miqdor o'zgartirish, o'chirish)
-- [ ] Buyurtma rasmiylashtirish (manzil, to'lov turi, izoh)
-- [ ] Haptic Feedback, tema sinxronizatsiya, viewport sozlash
+- [x] Telegram Mini App SDK integratsiyasi (ready, expand, themeParams CSS sync)
+- [x] Bosh sahifa (kategoriyalar, mahsulotlar 2-ustunli grid, suzuvchi savat tugmasi)
+- [x] Kategoriya bo'yicha filterlash (gorizontal scrollable chiplar)
+- [x] Mahsulot qidirish (debounce, real-time qidiruv, natijalar soni)
+- [x] Mahsulot tafsilotlari sahifasi (galereya, chegirma nishoni, qoldiq statusi, tavsif)
+- [x] Savat (qo'shish, miqdor o'zgartirish, o'chirish, minimal buyurtma nazorati)
+- [x] Buyurtma rasmiylashtirish (Telegram ma'lumotlari avto-to'ldirish, yetkazish/olib ketish, to'lov turi)
+- [x] Buyurtmalar tarixi va tafsilotlar cheki (/orders, /orders/:id)
+- [x] Haptic Feedback (light, selection, medium, success, error) va BackButton integratsiyasi
 
-### BOSQICH 4: Buyurtmalar tizimi — ~2 kun
+### BOSQICH 4: Buyurtmalar tizimi — KEYINGI BOSQICH ⏳
 > Maqsad: Buyurtma lifecycle to'liq ishlashi
 
 - [ ] Buyurtma yaratish (savat → order, stock kamaytirish, tranzaksiya)
