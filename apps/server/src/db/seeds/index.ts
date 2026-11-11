@@ -52,6 +52,14 @@ async function seed() {
       ]);
       store = res.rows[0] ?? null;
       logger.info('Seed', `🏪 Demo do'kon yaratildi: Hosil Market (ID: ${store?.id})`);
+    } else {
+      // Mavjud bo'lsa POS API kalitini yangilash
+      await query(
+        `UPDATE stores
+         SET pos_api_key = COALESCE(pos_api_key, 'flex_pos_demo_hosil_market_secret_123')
+         WHERE id = $1`,
+        [store.id]
+      );
     }
 
     if (!store) throw new Error('Store yaratib bo\'lmadi');

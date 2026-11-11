@@ -1,14 +1,21 @@
 import { Router } from 'express';
 import { StoreController } from './store.controller.js';
-import { requireAuth, validateBody } from '../../common/middlewares/index.js';
+import { PosController } from '../integration/pos.controller.js';
+import { requireAuth, resolveTenant, validateBody } from '../../common/middlewares/index.js';
 import { createStoreSchema, updateStoreSchema } from './store.validation.js';
 
 const router = Router();
 const controller = new StoreController();
+const posController = new PosController();
 
 // Do'kon egasining profili va do'konlari
 router.get('/profile', requireAuth, controller.getMyStores);
 router.patch('/:storeId', requireAuth, validateBody(updateStoreSchema), controller.updateStore);
+
+// POS integratsiya sozlamalari (API kalit va webhook)
+router.get('/settings/pos', requireAuth, resolveTenant, posController.getSettings);
+router.post('/settings/pos/regenerate-key', requireAuth, resolveTenant, posController.regenerateKey);
+router.patch('/settings/pos/toggle', requireAuth, resolveTenant, posController.togglePos);
 
 export { router as storeRoutes };
 

@@ -135,3 +135,38 @@ export const topProductsQuerySchema = z.object({
 });
 export type TopProductsQueryInput = z.infer<typeof topProductsQuerySchema>;
 
+/** POS sotuv elementi sxemasi */
+export const posSaleItemSchema = z.object({
+  barcode: z.string().optional(),
+  productId: z.number().int().positive().optional(),
+  sku: z.string().optional(),
+  quantity: z.number().int().positive('Sotilgan miqdor kamida 1 bo\'lishi kerak'),
+  price: z.number().int().min(0).optional(),
+});
+export type PosSaleItemInput = z.infer<typeof posSaleItemSchema>;
+
+/** POS sotuv webhook sxemasi */
+export const posSaleWebhookSchema = z.object({
+  receiptNumber: z.string().max(100).optional(),
+  paymentMethod: z.enum(['cash', 'card', 'other']).default('cash'),
+  items: z.array(posSaleItemSchema).min(1, 'Kamida 1 ta tovar ko\'rsatilishi shart'),
+  timestamp: z.string().optional(),
+});
+export type PosSaleWebhookInput = z.infer<typeof posSaleWebhookSchema>;
+
+/** POS stock sinxronizatsiya elementi */
+export const posStockSyncItemSchema = z.object({
+  barcode: z.string().optional(),
+  sku: z.string().optional(),
+  productId: z.number().int().positive().optional(),
+  stockQuantity: z.number().int().min(0, 'Qoldiq 0 dan kam bo\'lishi mumkin emas'),
+  price: z.number().int().min(0).optional(),
+});
+export type PosStockSyncItemInput = z.infer<typeof posStockSyncItemSchema>;
+
+/** POS ommaviy stock sinxronizatsiyasi */
+export const posStockSyncSchema = z.object({
+  items: z.array(posStockSyncItemSchema).min(1, 'Kamida 1 ta tovar ko\'rsatilishi shart'),
+});
+export type PosStockSyncInput = z.infer<typeof posStockSyncSchema>;
+

@@ -892,13 +892,14 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Buyurtma yetkazilganda (`delivered`) avtomatik tushum qaydnomasi integratsiyasi
 - [x] Moliya xulosasi (Summary: Sof balans, bugungi/oylik tushum va chiqim, AOV va kutilayotgan buyurtmalar)
 
-### BOSQICH 7: POS integratsiyasi — ~3 kun
-> Maqsad: Jismoniy kassadan sotilgan tovarlar FLEX da ham yangilanishi
+### BOSQICH 7: POS integratsiyasi — BAJARILDI ✅
+> Maqsad: Jismoniy kassadan sotilgan tovarlar FLEX da ham yangilanishi va 1C sinxronizatsiyasi
 
-- [ ] POS webhook API (`/integrations/pos/sale`)
-- [ ] Stock sinxronizatsiya API
-- [ ] FLEX Sync Agent (1C uchun) — alohida mini-dastur
-- [ ] API kalitlar va xavfsiz autentifikatsiya (POS uchun)
+- [x] POS webhook API (`POST /api/v1/integrations/pos/sale` — kassa sotuvi, stock kamaytirish, avto-tushum)
+- [x] Stock sinxronizatsiya API (`POST /api/v1/integrations/pos/stock-sync` — ommaviy qoldiq va narx yangilash)
+- [x] FLEX Sync Agent (1C uchun) — `tools/sync-agent/agent.ts` alohida CLI mini-dasturi (JSON/CSV)
+- [x] API kalitlar va xavfsiz autentifikatsiya (`X-POS-Api-Key` middleware, sozlamalar va regenerate API)
+- [x] POS audit jurnali (`pos_sync_logs` jadvali orqali har bir kassa amalini kuzatish)
 
 ### BOSQICH 8: Super Admin panel — ~2 kun
 > Maqsad: Platformani markaziy boshqarish

@@ -199,3 +199,41 @@ export interface CategorySalesDTO {
   totalRevenue: number;
   percentage: number;
 }
+
+/** POS sotuv natijasi */
+export interface PosSaleResultDTO {
+  success: boolean;
+  storeId: number;
+  totalItems: number;
+  updatedProducts: Array<{
+    id: number;
+    name: string;
+    soldQuantity: number;
+    remainingStock: number;
+  }>;
+  notFoundItems: Array<{
+    barcode?: string;
+    sku?: string;
+    productId?: number;
+  }>;
+  transactionId?: number;
+}
+
+/** POS stock sinxronizatsiya natijasi */
+export interface PosStockSyncResultDTO {
+  success: boolean;
+  storeId: number;
+  totalReceived: number;
+  updatedCount: number;
+  notFoundBarcodes: string[];
+}
+
+/** POS integratsiya sozlamalari */
+export interface PosIntegrationSettingsDTO {
+  storeId: number;
+  posApiKey: string | null;
+  posEnabled: boolean;
+  lastSyncAt: string | null;
+  webhookUrl: string;
+}
+
