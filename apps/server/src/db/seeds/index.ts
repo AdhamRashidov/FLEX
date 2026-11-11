@@ -153,11 +153,14 @@ async function seed() {
 
     // 5. Global Katalog shablonlari
     const globalItems = [
-      { name: 'Coca-Cola 1.5L', barcode: '5449000000996', category: 'Ichimliklar', brand: 'Coca-Cola' },
-      { name: 'Fanta 1.5L', barcode: '5449000011527', category: 'Ichimliklar', brand: 'Coca-Cola' },
-      { name: 'Sprite 1.5L', barcode: '5449000012203', category: 'Ichimliklar', brand: 'Coca-Cola' },
-      { name: 'Nestle Sut 3.2% 1L', barcode: '7613035889988', category: 'Sut mahsulotlari', brand: 'Nestle' },
-      { name: 'Makfa Oliy navli un 2kg', barcode: '4601424000305', category: 'Un va yormalar', brand: 'Makfa' },
+      { name: 'Coca-Cola 1.5L', barcode: '5449000000996', category: 'Ichimliklar', brand: 'Coca-Cola', imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500' },
+      { name: 'Fanta 1.5L', barcode: '5449000011527', category: 'Ichimliklar', brand: 'Coca-Cola', imageUrl: 'https://images.unsplash.com/photo-1624552184280-9e9631bbeee9?w=500' },
+      { name: 'Sprite 1.5L', barcode: '5449000012203', category: 'Ichimliklar', brand: 'Coca-Cola', imageUrl: 'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?w=500' },
+      { name: 'Nestle Sut 3.2% 1L', barcode: '7613035889988', category: 'Sut mahsulotlari', brand: 'Nestle', imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500' },
+      { name: 'Makfa Oliy navli un 2kg', barcode: '4601424000305', category: 'Un va yormalar', brand: 'Makfa', imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500' },
+      { name: 'Chortoq 0.5L Gazlangan suv', barcode: '4780005420015', category: 'Ichimliklar', brand: 'Chortoq', imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500' },
+      { name: 'Hot Lunch Mol go\'shti 70g', barcode: '4607001000012', category: 'Tez tayyorlanadigan taomlar', brand: 'Hot Lunch', imageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500' },
+      { name: 'Hot Lunch Tovuq go\'shti 90g', barcode: '4607001000029', category: 'Tez tayyorlanadigan taomlar', brand: 'Hot Lunch', imageUrl: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500' },
     ];
 
     for (const item of globalItems) {
@@ -167,9 +170,15 @@ async function seed() {
       );
       if (!existing) {
         await query(`
-          INSERT INTO global_catalog (name, barcode, category, brand, unit)
-          VALUES ($1, $2, $3, $4, 'dona')
-        `, [item.name, item.barcode, item.category, item.brand]);
+          INSERT INTO global_catalog (name, barcode, category, brand, image_url, unit)
+          VALUES ($1, $2, $3, $4, $5, 'dona')
+        `, [item.name, item.barcode, item.category, item.brand, item.imageUrl]);
+      } else {
+        await query(`
+          UPDATE global_catalog
+          SET image_url = $1
+          WHERE barcode = $2 AND (image_url IS NULL OR image_url = '')
+        `, [item.imageUrl, item.barcode]);
       }
     }
     logger.info('Seed', '🌐 Global katalog shablonlari kiritildi');

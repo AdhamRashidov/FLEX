@@ -872,15 +872,15 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Buyurtmalar tarixi va tafsilotlar cheki (mijoz API + Frontend)
 - [x] Buyurtmalar ro'yxati (admin API)
 
-### BOSQICH 5: Ommaviy import — KEYINGI BOSQICH ⏳
-> Maqsad: Do'kondor tezda 100-1000 lab mahsulotni yuklashi
+### BOSQICH 5: Ommaviy import va Global Katalog — BAJARILDI ✅
+> Maqsad: Do'kondor tezda 100-1000 lab mahsulotni yuklashi va Global Katalogdan tayyor tiniq rasmlarni qayta yuklamasdan (DRY) foydalanishi
 
-- [ ] Excel/CSV import (fayl yuklash, parsing, bazaga yozish)
-- [ ] Telegram kanal scraper (GramJS yoki Telethon)
-- [ ] AI orqali post matnidan tovar nomi/narx ajratish (Gemini Flash)
-- [ ] Import progress tracking (import_jobs jadvali)
-- [ ] Global katalog (shtrix-kod bo'yicha tayyor mahsulotlarni tanlash)
-- [ ] Shtrix-kod skaner (telefon kamerasi → html5-qrcode)
+- [x] Excel/CSV import (xlsx parser, dinamik ustunlar moslashuvi, kategoriya avto-yaratish, bazaga upsert)
+- [x] Smart Media Auto-link (Shtrix-kod bo'yicha Global Katalogdagi tiniq studiya rasmlarini avtomatik biriktirish)
+- [x] AI va Qoidaviy Post Parsing (Gemini Flash integratsiyasi + Regex fallback orqali tovarlar ro'yxatini ajratib olish)
+- [x] Import progress tracking (`import_jobs` jadvali orqali holat, muvaffaqiyat va xatolar hisobi)
+- [x] Global katalog qidiruv va Adoption API (Shtrix-kod/matnli qidiruv, do'konga 0 bayt qo'shimcha disk sarfi bilan o'zlashtirish)
+- [x] Shtrix-kod skaner API (`GET /api/v1/store/catalog/barcode/:barcode` orqali tezkor ma'lumot olish)
 
 ### BOSQICH 6: Moliya va hisobotlar — ~2 kun
 > Maqsad: Do'kon egasi kirim-chiqim va sotuvlarni nazorat qilishi

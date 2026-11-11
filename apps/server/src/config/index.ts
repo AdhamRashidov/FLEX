@@ -14,6 +14,7 @@ const envSchema = z.object({
   CORS_ORIGINS: z.string().default('http://localhost:5173,http://localhost:5174'),
   REDIS_URL: z.string().default('redis://localhost:6379'),
   REDIS_ENABLED: z.coerce.boolean().default(false),
+  GEMINI_API_KEY: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -37,6 +38,9 @@ export const config = {
   redis: {
     url: parsed.data.REDIS_URL,
     enabled: parsed.data.REDIS_ENABLED,
+  },
+  ai: {
+    geminiApiKey: parsed.data.GEMINI_API_KEY,
   },
   cors: { origins: parsed.data.CORS_ORIGINS.split(',').map((s) => s.trim()) },
   isDev: parsed.data.NODE_ENV === 'development',
