@@ -38,7 +38,11 @@ export function validateQuery<T>(schema: ZodSchema<T>) {
       throw new ValidationError(formatZodError(result.error));
     }
 
-    req.query = result.data as Record<string, any>;
+    Object.defineProperty(req, 'query', {
+      value: result.data,
+      writable: true,
+      configurable: true,
+    });
     next();
   };
 }
@@ -54,7 +58,11 @@ export function validateParams<T>(schema: ZodSchema<T>) {
       throw new ValidationError(formatZodError(result.error));
     }
 
-    req.params = result.data as Record<string, string>;
+    Object.defineProperty(req, 'params', {
+      value: result.data,
+      writable: true,
+      configurable: true,
+    });
     next();
   };
 }
