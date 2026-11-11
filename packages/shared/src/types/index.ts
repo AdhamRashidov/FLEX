@@ -1,4 +1,4 @@
-import type { OrderStatus, PaymentMethod, PaymentStatus, DeliveryType, ProductUnit, StoreStatus, StaffRole } from '../enums/index.js';
+import type { OrderStatus, PaymentMethod, PaymentStatus, DeliveryType, ProductUnit, StoreStatus, StaffRole, TransactionType } from '../enums/index.js';
 
 /** API muvaffaqiyatli javob formati */
 export interface ApiResponse<T> {
@@ -141,4 +141,61 @@ export interface StaffMemberDTO {
   lastName: string | null;
   username: string | null;
   isActive: boolean;
+}
+
+/** Moliyaviy tranzaksiya */
+export interface TransactionDTO {
+  id: number;
+  storeId: number;
+  orderId: number | null;
+  type: TransactionType;
+  category: string;
+  amount: number;
+  description: string | null;
+  createdAt: string;
+}
+
+/** Moliya umumiy xulosasi (Summary) */
+export interface FinanceSummaryDTO {
+  totalBalance: number;
+  totalIncome: number;
+  totalExpense: number;
+  todayIncome: number;
+  todayExpense: number;
+  todayOrdersCount: number;
+  weekIncome: number;
+  weekExpense: number;
+  monthIncome: number;
+  monthExpense: number;
+  averageOrderValue: number;
+  pendingOrdersCount: number;
+  pendingOrdersAmount: number;
+}
+
+/** Vaqt bo'yicha sotuv nuqtasi (Chart nuqtasi) */
+export interface SalesChartPointDTO {
+  date: string;
+  ordersCount: number;
+  totalSales: number;
+  netIncome: number;
+  expenses: number;
+}
+
+/** Top sotilgan mahsulot */
+export interface TopProductDTO {
+  productId: number;
+  productName: string;
+  imageUrl: string | null;
+  totalQuantity: number;
+  totalRevenue: number;
+  percentage: number;
+}
+
+/** Kategoriya bo'yicha sotuv ulushi */
+export interface CategorySalesDTO {
+  categoryId: number | null;
+  categoryName: string;
+  totalQuantity: number;
+  totalRevenue: number;
+  percentage: number;
 }

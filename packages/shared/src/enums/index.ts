@@ -69,6 +69,19 @@ export const TransactionType = {
 } as const;
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];
 
+/** Tranzaksiya toifasi */
+export const TransactionCategory = {
+  SALE: 'sale',
+  DELIVERY: 'delivery',
+  REFUND: 'refund',
+  RENT: 'rent',
+  SALARY: 'salary',
+  PURCHASE: 'purchase',
+  UTILITY: 'utility',
+  OTHER: 'other',
+} as const;
+export type TransactionCategory = (typeof TransactionCategory)[keyof typeof TransactionCategory];
+
 /** Import manba turi */
 export const ImportSource = {
   EXCEL: 'excel',

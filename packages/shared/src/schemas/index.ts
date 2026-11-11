@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaymentMethod, DeliveryType, ProductUnit, OrderStatus } from '../enums/index.js';
+import { PaymentMethod, DeliveryType, ProductUnit, OrderStatus, TransactionType } from '../enums/index.js';
 
 /** Paginatsiya so'rov parametrlari */
 export const paginationSchema = z.object({
@@ -100,3 +100,38 @@ export const addToCartSchema = z.object({
   quantity: z.number().int().min(1).default(1),
 });
 export type AddToCartInput = z.infer<typeof addToCartSchema>;
+
+/** Tranzaksiya yaratish sxemasi */
+export const createTransactionSchema = z.object({
+  type: z.enum([TransactionType.INCOME, TransactionType.EXPENSE]),
+  category: z.string().min(1, 'Kategoriya kiritilishi shart').max(50),
+  amount: z.number().int().positive('Summa 0 dan katta bo\'lishi shart'),
+  description: z.string().max(1000).optional(),
+  orderId: z.number().int().positive().optional(),
+});
+export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
+
+/** Tranzaksiyalar filtri sxemasi */
+export const transactionFilterSchema = paginationSchema.extend({
+  type: z.enum([TransactionType.INCOME, TransactionType.EXPENSE]).optional(),
+  category: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+export type TransactionFilterInput = z.infer<typeof transactionFilterSchema>;
+
+/** Sotuvlar hisoboti filtri sxemasi */
+export const salesReportQuerySchema = z.object({
+  period: z.enum(['daily', 'weekly', 'monthly', 'custom']).default('daily'),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+export type SalesReportQueryInput = z.infer<typeof salesReportQuerySchema>;
+
+/** Top mahsulotlar hisoboti filtri sxemasi */
+export const topProductsQuerySchema = z.object({
+  period: z.enum(['today', 'week', 'month', 'year', 'all']).default('month'),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+});
+export type TopProductsQueryInput = z.infer<typeof topProductsQuerySchema>;
+

@@ -44,6 +44,7 @@ import { storeOrderRouter, shopOrderRouter } from './modules/order/index.js';
 import { integrationRoutes } from './modules/integration/index.js';
 import { catalogRoutes } from './modules/catalog/index.js';
 import { importRoutes } from './modules/import/index.js';
+import { financeRoutes } from './modules/finance/index.js';
 
 // ── API Marshrutlari (v1) ──────────────────────
 app.use('/api/v1/auth', authRoutes);
@@ -55,6 +56,7 @@ app.use('/api/v1/store/products', storeProductRouter);
 app.use('/api/v1/store/orders', storeOrderRouter);
 app.use('/api/v1/store/catalog', catalogRoutes);
 app.use('/api/v1/store/import', importRoutes);
+app.use('/api/v1/store/finance', financeRoutes);
 app.use('/api/v1/admin/stores', adminStoreRoutes);
 
 // Xaridor Mini App vitrinasi

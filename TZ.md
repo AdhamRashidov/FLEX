@@ -882,13 +882,15 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Global katalog qidiruv va Adoption API (Shtrix-kod/matnli qidiruv, do'konga 0 bayt qo'shimcha disk sarfi bilan o'zlashtirish)
 - [x] Shtrix-kod skaner API (`GET /api/v1/store/catalog/barcode/:barcode` orqali tezkor ma'lumot olish)
 
-### BOSQICH 6: Moliya va hisobotlar — ~2 kun
-> Maqsad: Do'kon egasi kirim-chiqim va sotuvlarni nazorat qilishi
+### BOSQICH 6: Moliya va hisobotlar — BAJARILDI ✅
+> Maqsad: Do'kon egasi kirim-chiqim va sotuvlarni nazorat qilishi, analitika va grafik ma'lumotlarini olishi
 
-- [ ] Kunlik / haftalik / oylik sotuvlar hisoboti
-- [ ] Top mahsulotlar
-- [ ] Kirim-chiqim qaydnomasi
-- [ ] Dashboard grafiklari (admin)
+- [x] Kunlik / haftalik / oylik sotuvlar hisoboti (`generate_series` vaqt seriyalari bilan to'liq grafik API)
+- [x] Top mahsulotlar (daromad, miqdor va umumiy sotuvdagi foiz ulushi bo'yicha)
+- [x] Kategoriyalar bo'yicha sotuv tahlili (daromad va mahsulotlar soni bo'yicha)
+- [x] Kirim-chiqim qaydnomasi (manual tranzaksiyalar, filtrlash, sana va paginatsiya)
+- [x] Buyurtma yetkazilganda (`delivered`) avtomatik tushum qaydnomasi integratsiyasi
+- [x] Moliya xulosasi (Summary: Sof balans, bugungi/oylik tushum va chiqim, AOV va kutilayotgan buyurtmalar)
 
 ### BOSQICH 7: POS integratsiyasi — ~3 kun
 > Maqsad: Jismoniy kassadan sotilgan tovarlar FLEX da ham yangilanishi

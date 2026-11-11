@@ -1,8 +1,10 @@
 import { query, queryOne } from '../../infrastructure/database/pool.js';
 import { PgOrderRepository } from '../../infrastructure/repositories/pg-order.repository.js';
 import { PgStoreRepository } from '../../infrastructure/repositories/pg-store.repository.js';
+import { PgFinanceRepository } from '../../infrastructure/repositories/pg-finance.repository.js';
 import { cacheService } from '../../infrastructure/cache/redis.js';
 import { telegramNotificationService } from '../../infrastructure/telegram/telegram-notification.service.js';
+import { logger } from '../../common/logger/index.js';
 import {
   ValidationError,
   NotFoundError,
@@ -47,10 +49,12 @@ function mapEntityToDTO(order: OrderEntity): OrderDTO {
 export class OrderService {
   private orderRepo: PgOrderRepository;
   private storeRepo: PgStoreRepository;
+  private financeRepo: PgFinanceRepository;
 
   constructor() {
     this.orderRepo = new PgOrderRepository();
     this.storeRepo = new PgStoreRepository();
+    this.financeRepo = new PgFinanceRepository();
   }
 
   /**
@@ -120,13 +124,24 @@ export class OrderService {
           guestUser = uRes.rows[0] ?? null;
         }
 
-        const newCust = await queryOne<{ id: string }>(
-          `INSERT INTO customers (store_id, user_id, phone)
-           VALUES ($1, $2, $3)
-           RETURNING id`,
-          [storeId, Number(guestUser!.id), input.customerPhone]
+        const guestUserId = Number(guestUser!.id);
+        const existingGuestCust = await queryOne<{ id: string }>(
+          'SELECT id FROM customers WHERE store_id = $1 AND user_id = $2',
+          [storeId, guestUserId]
         );
-        customerId = Number(newCust!.id);
+
+        if (existingGuestCust) {
+          customerId = Number(existingGuestCust.id);
+          await query('UPDATE customers SET phone = $1, updated_at = NOW() WHERE id = $2', [input.customerPhone, customerId]);
+        } else {
+          const newCust = await queryOne<{ id: string }>(
+            `INSERT INTO customers (store_id, user_id, phone)
+             VALUES ($1, $2, $3)
+             RETURNING id`,
+            [storeId, guestUserId, input.customerPhone]
+          );
+          customerId = Number(newCust!.id);
+        }
       }
     }
 
@@ -158,7 +173,7 @@ export class OrderService {
     }> = [];
 
     for (const item of input.items) {
-      const prod = productMap.get(item.productId);
+      const prod = productMap.get(Number(item.productId));
       if (!prod || !prod.is_active) {
         throw new NotFoundError(`Mahsulot (ID: ${item.productId})`);
       }
@@ -361,6 +376,15 @@ export class OrderService {
     // Agar bekor qilinib, omborga qaytarilgan bo'lsa, keshni tozalash
     if (input.status === 'cancelled') {
       await cacheService.delPattern(`shop:products:${storeId}:*`);
+    }
+
+    // Agar buyurtma yetkazib berilgan bo'lsa, moliyada tushum avtomatik qayd etiladi
+    if (input.status === 'delivered') {
+      try {
+        await this.financeRepo.recordDeliveredOrderIncome(storeId, orderId, updated.total);
+      } catch (err) {
+        logger.warn('OrderService', `Moliya qaydida ogohlantirish: ${err}`);
+      }
     }
 
     // Xaridorga uning Telegram botida holat o'zgarganligi haqida xabar berish
