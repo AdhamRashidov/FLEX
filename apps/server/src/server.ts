@@ -45,9 +45,13 @@ import { integrationRoutes } from './modules/integration/index.js';
 import { catalogRoutes } from './modules/catalog/index.js';
 import { importRoutes } from './modules/import/index.js';
 import { financeRoutes } from './modules/finance/index.js';
+import { superRoutes } from './modules/super/index.js';
 
 // ── API Marshrutlari (v1) ──────────────────────
 app.use('/api/v1/auth', authRoutes);
+
+// Super Admin (Platformani markaziy boshqarish — faqat platforma egasi uchun)
+app.use('/api/v1/super', superRoutes);
 
 // Do'kon egasi / Admin boshqaruvi
 app.use('/api/v1/store', storeRoutes);

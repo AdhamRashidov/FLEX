@@ -901,12 +901,14 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] API kalitlar va xavfsiz autentifikatsiya (`X-POS-Api-Key` middleware, sozlamalar va regenerate API)
 - [x] POS audit jurnali (`pos_sync_logs` jadvali orqali har bir kassa amalini kuzatish)
 
-### BOSQICH 8: Super Admin panel — ~2 kun
-> Maqsad: Platformani markaziy boshqarish
+### BOSQICH 8: Super Admin panel — BAJARILDI ✅
+> Maqsad: Platformani markaziy boshqarish, monitoring va global katalog nazorati
 
-- [ ] Do'konlar ro'yxati, statistika
-- [ ] Global katalog boshqaruvi
-- [ ] Monitoring va alertlar
+- [x] Super Admin Dashboard (`GET /api/v1/super/dashboard` — Platforma aylanmasi (GMV), buyurtmalar, do'konlar va tizim monitoringi)
+- [x] Do'konlar nazorati (`/api/v1/super/stores` — ro'yxat, qidiruv, holatni boshqarish: active, suspended, inactive)
+- [x] Global katalog boshqaruvi (`/api/v1/super/catalog` — CRUD, standart studiya rasmlari va shtrix-kodlar kiritish)
+- [x] Foydalanuvchilar boshqaruvi (`/api/v1/super/users` — ro'yxat, Super Admin huquqini tayinlash)
+- [x] RBAC xavfsizlik nazorati (`requireRole(UserRole.SUPER_ADMIN)` — faqat platforma egasi uchun qat'iy himoya)
 
 ### BOSQICH 9: Optimizatsiya va polish — doimiy
 > Maqsad: Tezlik, UX va barqarorlikni oshirish

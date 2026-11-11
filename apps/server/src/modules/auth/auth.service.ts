@@ -56,25 +56,35 @@ export class AuthService {
       isPremium: tgUser.is_premium ?? false,
     });
 
-    // 3. Foydalanuvchining rolini aniqlash (Owner, Staff yoki Customer)
+    // 3. Foydalanuvchining rolini aniqlash (Super Admin, Owner, Staff yoki Customer)
     let role: UserRole = UserRole.CUSTOMER;
 
-    // Do'kon egasi ekanligini tekshirish
-    const ownedStore = await queryOne<{ id: string }>(
-      'SELECT id FROM stores WHERE owner_id = $1 LIMIT 1',
+    // Super Admin tekshiruvi (Bazada flag yoki config dagi Telegram ID lar)
+    const userDb = await queryOne<{ is_super_admin: boolean }>(
+      'SELECT is_super_admin FROM users WHERE id = $1',
       [userEntity.id]
     );
 
-    if (ownedStore) {
-      role = UserRole.OWNER;
+    if (userDb?.is_super_admin || config.superAdminIds.includes(userEntity.telegramId)) {
+      role = UserRole.SUPER_ADMIN;
     } else {
-      // Xodim ekanligini tekshirish
-      const staffMember = await queryOne<{ role: string }>(
-        'SELECT role FROM staff_members WHERE user_id = $1 AND is_active = true LIMIT 1',
+      // Do'kon egasi ekanligini tekshirish
+      const ownedStore = await queryOne<{ id: string }>(
+        'SELECT id FROM stores WHERE owner_id = $1 LIMIT 1',
         [userEntity.id]
       );
-      if (staffMember) {
-        role = staffMember.role === 'owner' ? UserRole.OWNER : UserRole.CASHIER;
+
+      if (ownedStore) {
+        role = UserRole.OWNER;
+      } else {
+        // Xodim ekanligini tekshirish
+        const staffMember = await queryOne<{ role: string }>(
+          'SELECT role FROM staff_members WHERE user_id = $1 AND is_active = true LIMIT 1',
+          [userEntity.id]
+        );
+        if (staffMember) {
+          role = staffMember.role === 'owner' ? UserRole.OWNER : UserRole.CASHIER;
+        }
       }
     }
 

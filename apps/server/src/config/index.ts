@@ -15,6 +15,7 @@ const envSchema = z.object({
   REDIS_URL: z.string().default('redis://localhost:6379'),
   REDIS_ENABLED: z.coerce.boolean().default(false),
   GEMINI_API_KEY: z.string().optional(),
+  SUPER_ADMIN_IDS: z.string().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -42,6 +43,10 @@ export const config = {
   ai: {
     geminiApiKey: parsed.data.GEMINI_API_KEY,
   },
+  superAdminIds: parsed.data.SUPER_ADMIN_IDS
+    .split(',')
+    .map((s) => Number(s.trim()))
+    .filter((n) => !isNaN(n) && n > 0),
   cors: { origins: parsed.data.CORS_ORIGINS.split(',').map((s) => s.trim()) },
   isDev: parsed.data.NODE_ENV === 'development',
   isProd: parsed.data.NODE_ENV === 'production',

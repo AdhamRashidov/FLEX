@@ -237,3 +237,72 @@ export interface PosIntegrationSettingsDTO {
   webhookUrl: string;
 }
 
+/** Super Admin Dashboard statistikasi */
+export interface SuperDashboardDTO {
+  stores: {
+    total: number;
+    active: number;
+    inactive: number;
+    suspended: number;
+  };
+  metrics: {
+    totalGmv: number;
+    totalOrders: number;
+    totalUsers: number;
+    todayOrders: number;
+    todayGmv: number;
+  };
+  system: {
+    status: 'healthy' | 'degraded' | 'down';
+    uptimeSeconds: number;
+    nodeVersion: string;
+    memoryMb: number;
+    postgresPoolTotal: number;
+    postgresPoolIdle: number;
+    redisConnected: boolean;
+  };
+}
+
+/** Super Admin do'konlar ro'yxati elementi */
+export interface SuperStoreListItemDTO {
+  id: number;
+  name: string;
+  slug: string;
+  status: StoreStatus;
+  ownerId: number;
+  ownerName: string;
+  ownerPhone: string | null;
+  botUsername: string | null;
+  totalOrders: number;
+  totalGmv: number;
+  productsCount: number;
+  posEnabled: boolean;
+  createdAt: string;
+}
+
+/** Global Katalog elementi DTO */
+export interface GlobalCatalogItemDTO {
+  id: number;
+  name: string;
+  barcode: string | null;
+  category: string | null;
+  brand: string | null;
+  unit: string;
+  imageUrl: string | null;
+  description: string | null;
+  createdAt: string;
+}
+
+/** Super Admin foydalanuvchilar ro'yxati elementi */
+export interface SuperUserListItemDTO {
+  id: number;
+  telegramId: number;
+  firstName: string;
+  lastName: string | null;
+  username: string | null;
+  isSuperAdmin: boolean;
+  ownedStoresCount: number;
+  createdAt: string;
+}
+
+

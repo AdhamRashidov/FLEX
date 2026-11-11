@@ -170,3 +170,27 @@ export const posStockSyncSchema = z.object({
 });
 export type PosStockSyncInput = z.infer<typeof posStockSyncSchema>;
 
+/** Global Katalog tovarini yaratish sxemasi */
+export const createGlobalCatalogItemSchema = z.object({
+  name: z.string().min(1, 'Mahsulot nomi kiritilishi shart').max(500),
+  barcode: z.string().max(50).optional(),
+  category: z.string().max(255).optional(),
+  brand: z.string().max(255).optional(),
+  unit: z.string().max(20).default('dona'),
+  imageUrl: z.string().url('Rasm havolasi to\'g\'ri URL bo\'lishi kerak').optional().or(z.literal('')),
+  description: z.string().max(2000).optional(),
+});
+export type CreateGlobalCatalogItemInput = z.infer<typeof createGlobalCatalogItemSchema>;
+
+/** Global Katalog tovarini tahrirlash sxemasi */
+export const updateGlobalCatalogItemSchema = createGlobalCatalogItemSchema.partial();
+export type UpdateGlobalCatalogItemInput = z.infer<typeof updateGlobalCatalogItemSchema>;
+
+/** Do'kon holatini o'zgartirish sxemasi (Super Admin) */
+export const updateStoreStatusSchema = z.object({
+  status: z.enum(['active', 'inactive', 'suspended', 'maintenance']),
+  reason: z.string().max(500).optional(),
+});
+export type UpdateStoreStatusInput = z.infer<typeof updateStoreStatusSchema>;
+
+
