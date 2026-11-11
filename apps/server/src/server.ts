@@ -17,22 +17,57 @@ app.use(requestTracer);
 
 // ── Statik Fayllar (Rasmlar) ───────────────────
 import path from 'path';
+import { redisManager } from './infrastructure/cache/redis.js';
+import { defaultRateLimiter, authRateLimiter, posRateLimiter } from './common/middlewares/index.js';
+
 app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
-// ── Health Check ──────────────────────────────
+// ── Health & System Metrics ───────────────────
 app.get('/api/health', async (_req, res) => {
   try {
+    const dbStart = Date.now();
     await pool.query('SELECT 1');
+    const dbLatencyMs = Date.now() - dbStart;
+
+    const memory = process.memoryUsage();
+
     res.json({
       success: true,
       data: {
         status: 'healthy',
         uptime: process.uptime(),
+        environment: config.env,
         timestamp: new Date().toISOString(),
+        database: {
+          status: 'connected',
+          latencyMs: dbLatencyMs,
+          pool: {
+            total: pool.totalCount,
+            idle: pool.idleCount,
+            waiting: pool.waitingCount,
+          },
+        },
+        redis: {
+          enabled: config.redis.enabled,
+          status: redisManager.isReady() ? 'connected' : 'disabled_or_offline',
+        },
+        system: {
+          nodeVersion: process.version,
+          platform: process.platform,
+          memoryUsage: {
+            rssMb: Math.round(memory.rss / 1024 / 1024),
+            heapTotalMb: Math.round(memory.heapTotal / 1024 / 1024),
+            heapUsedMb: Math.round(memory.heapUsed / 1024 / 1024),
+          },
+        },
       },
     });
-  } catch {
-    res.status(503).json({ success: false, error: { code: 'DB_UNREACHABLE', message: 'Database ulanishi mavjud emas' } });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Noma\'lum xatolik';
+    res.status(503).json({
+      success: false,
+      error: { code: 'SERVICE_DEGRADED', message: `Database ulanishida uzilish: ${message}` },
+    });
   }
 });
 
@@ -47,8 +82,14 @@ import { importRoutes } from './modules/import/index.js';
 import { financeRoutes } from './modules/finance/index.js';
 import { superRoutes } from './modules/super/index.js';
 
+// ── Global & Specific Rate Limiting ───────────
+app.use('/api', defaultRateLimiter);
+app.use('/api/v1/auth', authRateLimiter);
+app.use('/api/v1/integrations/pos', posRateLimiter);
+
 // ── API Marshrutlari (v1) ──────────────────────
 app.use('/api/v1/auth', authRoutes);
+
 
 // Super Admin (Platformani markaziy boshqarish — faqat platforma egasi uchun)
 app.use('/api/v1/super', superRoutes);

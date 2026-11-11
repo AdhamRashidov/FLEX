@@ -1,0 +1,18 @@
+{
+  "name": "FLEX Marketplace",
+  "short_name": "FLEX",
+  "description": "Telegram orqali tezkor va qulay do'kon savdosi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2481cc",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

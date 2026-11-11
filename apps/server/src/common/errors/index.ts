@@ -6,4 +6,5 @@ export {
   NotFoundError,
   ConflictError,
   DatabaseError,
+  RateLimitError,
 } from './app-error.js';

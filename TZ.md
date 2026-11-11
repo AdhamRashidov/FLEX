@@ -838,7 +838,7 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [ ] Telegram bot webhook registration (dinamik)
 - [ ] Bot `/start` komandasi → Mini App tugmasi
 
-### BOSQICH 2: Mahsulotlar va kategoriyalar — BACKEND YAKUNLANDI ✅
+### BOSQICH 2: Mahsulotlar va kategoriyalar — BAJARILDI ✅
 > Maqsad: Do'kon egasi mahsulotlarni qo'sha olishi va boshqarishi
 
 - [x] Categories CRUD API (Raw SQL, slug generation, reorder, active filter)
@@ -846,7 +846,7 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Rasm yuklash va DRY Deduplication (SHA-256 xesh, reference-counting, avto-tozalash)
 - [x] Redis kesh integratsiyasi (tezkor katalog, invalidation on mutations)
 - [x] Stock boshqaruvi (qoldiq o'zgartirish, low stock alerts)
-- [ ] Frontend admin: Kategoriyalar va Mahsulotlar boshqaruvi
+- [x] Frontend admin: Kategoriyalar va Mahsulotlar boshqaruvi (`apps/admin`)
 
 ### BOSQICH 3: Mijoz Mini App — BAJARILDI ✅
 > Maqsad: Xaridor mahsulotlarni ko'rib, savatga qo'shib, buyurtma bera olishi
@@ -910,15 +910,16 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Foydalanuvchilar boshqaruvi (`/api/v1/super/users` — ro'yxat, Super Admin huquqini tayinlash)
 - [x] RBAC xavfsizlik nazorati (`requireRole(UserRole.SUPER_ADMIN)` — faqat platforma egasi uchun qat'iy himoya)
 
-### BOSQICH 9: Optimizatsiya va polish — doimiy
+### BOSQICH 9: Optimizatsiya va polish — BAJARILDI ✅
 > Maqsad: Tezlik, UX va barqarorlikni oshirish
 
-- [ ] Performance optimizatsiya (query indekslar, kesh)
-- [ ] Error tracking va logging
-- [ ] Unit va integration testlar
-- [ ] SEO va meta taglar (Mini App uchun share)
-- [ ] PWA imkoniyatlari
-- [ ] Xavfsizlik auditi
+- [x] Performance optimizatsiya (query indekslar, kesh)
+- [x] Error tracking va logging (metrics, requestTracer, structured logger)
+- [x] Unit va integration testlar
+- [x] SEO va meta taglar (Mini App uchun share, OpenGraph)
+- [x] PWA imkoniyatlari (manifest.json, icon.svg, theme-color)
+- [x] Xavfsizlik auditi (rate limiting guard, parameterized SQL, RBAC)
+
 
 ---
 

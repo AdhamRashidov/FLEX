@@ -1,0 +1,107 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import type { UserDTO, UserRole, StoreDTO } from '@flex/shared';
+import { adminApi } from '../services/api';
+
+interface AuthUser extends UserDTO {
+  role: UserRole;
+  isSuperAdmin?: boolean;
+}
+
+interface AdminAuthContextType {
+  user: AuthUser | null;
+  currentStore: StoreDTO | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  loginWithToken: (token: string, storeId?: number) => Promise<void>;
+  refreshProfile: () => Promise<void>;
+  logout: () => void;
+}
+
+const AdminAuthContext = createContext<AdminAuthContextType | null>(null);
+
+export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [currentStore, setCurrentStore] = useState<StoreDTO | null>(null);
+  const [token, setToken] = useState<string | null>(() => adminApi.getToken());
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const refreshProfile = async (): Promise<void> => {
+    try {
+      const activeToken = adminApi.getToken();
+      if (!activeToken) {
+        setUser(null);
+        setCurrentStore(null);
+        return;
+      }
+
+      // Fetch user profile
+      const userRes = await adminApi.get<{ user: AuthUser }>('/auth/me');
+      setUser(userRes.user);
+
+      // Fetch store profile if store context is present
+      try {
+        const storeRes = await adminApi.get<{ store: StoreDTO }>('/store/profile');
+        setCurrentStore(storeRes.store);
+        adminApi.setStoreId(storeRes.store.id);
+      } catch {
+        // Store not set or empty
+      }
+    } catch (err) {
+      console.warn('[AdminAuth] Profil yuklashda xatolik:', err);
+      // Agar token muddati o'tgan bo'lsa
+      adminApi.setToken(null);
+      setToken(null);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loginWithToken = async (newToken: string, storeId?: number): Promise<void> => {
+    adminApi.setToken(newToken);
+    if (storeId) {
+      adminApi.setStoreId(storeId);
+    }
+    setToken(newToken);
+    setIsLoading(true);
+    await refreshProfile();
+  };
+
+  const logout = (): void => {
+    adminApi.setToken(null);
+    adminApi.setStoreId(null);
+    setToken(null);
+    setUser(null);
+    setCurrentStore(null);
+  };
+
+  useEffect(() => {
+    refreshProfile();
+  }, []);
+
+  return (
+    <AdminAuthContext.Provider
+      value={{
+        user,
+        currentStore,
+        token,
+        isAuthenticated: Boolean(user && token),
+        isLoading,
+        loginWithToken,
+        refreshProfile,
+        logout,
+      }}
+    >
+      {children}
+    </AdminAuthContext.Provider>
+  );
+}
+
+export function useAdminAuth(): AdminAuthContextType {
+  const context = useContext(AdminAuthContext);
+  if (!context) {
+    throw new Error('useAdminAuth must be used within an AdminAuthProvider');
+  }
+  return context;
+}

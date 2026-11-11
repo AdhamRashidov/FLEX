@@ -5,3 +5,5 @@ export * from './role-guard.js';
 export * from './tenant-guard.js';
 export * from './validate.js';
 export * from './pos-auth-guard.js';
+export * from './rate-limiter.js';
+

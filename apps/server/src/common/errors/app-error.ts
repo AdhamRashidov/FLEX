@@ -51,3 +51,10 @@ export class DatabaseError extends AppError {
     super(message, 500, 'DATABASE_ERROR', false);
   }
 }
+
+export class RateLimitError extends AppError {
+  constructor(message = 'So\'rovlar soni me\'yordan oshdi. Iltimos biroz kuting.') {
+    super(message, 429, 'RATE_LIMIT_EXCEEDED');
+  }
+}
+
