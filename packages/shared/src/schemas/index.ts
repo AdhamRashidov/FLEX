@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaymentMethod, DeliveryType, ProductUnit } from '../enums/index.js';
+import { PaymentMethod, DeliveryType, ProductUnit, OrderStatus } from '../enums/index.js';
 
 /** Paginatsiya so'rov parametrlari */
 export const paginationSchema = z.object({
@@ -17,7 +17,15 @@ export const createProductSchema = z.object({
   price: z.number().int().min(0, 'Narx 0 dan kam bo\'lishi mumkin emas'),
   oldPrice: z.number().int().min(0).optional(),
   costPrice: z.number().int().min(0).optional(),
-  unit: z.enum([ProductUnit.DONA, ProductUnit.KG, ProductUnit.LITR, ProductUnit.METR, ProductUnit.PACHKA, ProductUnit.QUTI, ProductUnit.JUFT]).default(ProductUnit.DONA),
+  unit: z.enum([
+    ProductUnit.DONA,
+    ProductUnit.KG,
+    ProductUnit.LITR,
+    ProductUnit.METR,
+    ProductUnit.PACHKA,
+    ProductUnit.QUTI,
+    ProductUnit.JUFT,
+  ]).default(ProductUnit.DONA),
   categoryId: z.number().int().optional(),
   stockQuantity: z.number().int().min(0).default(0),
   lowStockThreshold: z.number().int().min(0).default(5),
@@ -26,16 +34,56 @@ export const createProductSchema = z.object({
 });
 export type CreateProductInput = z.infer<typeof createProductSchema>;
 
+/** Buyurtma elementi sxemasi */
+export const orderItemInputSchema = z.object({
+  productId: z.number().int().positive('Mahsulot ID si to\'g\'ri bo\'lishi shart'),
+  quantity: z.number().int().positive('Miqdor kamida 1 bo\'lishi shart'),
+});
+export type OrderItemInput = z.infer<typeof orderItemInputSchema>;
+
 /** Buyurtma yaratish sxemasi */
 export const createOrderSchema = z.object({
+  customerName: z.string().min(1, 'Ismingizni kiriting').max(200),
+  customerPhone: z.string().min(9, 'Telefon raqamingizni to\'liq kiriting').max(30),
   paymentMethod: z.enum([PaymentMethod.CASH, PaymentMethod.CARD_TRANSFER]),
   deliveryType: z.enum([DeliveryType.DELIVERY, DeliveryType.PICKUP]),
-  deliveryAddress: z.string().optional(),
+  deliveryAddress: z.string().max(1000).optional(),
   deliveryLat: z.number().optional(),
   deliveryLng: z.number().optional(),
   customerNote: z.string().max(500).optional(),
+  items: z.array(orderItemInputSchema).min(1, 'Savatda kamida 1 ta mahsulot bo\'lishi shart'),
 });
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+
+/** Buyurtma holatini yangilash sxemasi */
+export const updateOrderStatusSchema = z.object({
+  status: z.enum([
+    OrderStatus.PENDING,
+    OrderStatus.CONFIRMED,
+    OrderStatus.PREPARING,
+    OrderStatus.DELIVERING,
+    OrderStatus.DELIVERED,
+    OrderStatus.CANCELLED,
+  ]),
+  cancelReason: z.string().max(500).optional(),
+});
+export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
+
+/** Buyurtmalar filtri sxemasi */
+export const orderFilterSchema = paginationSchema.extend({
+  status: z.enum([
+    OrderStatus.PENDING,
+    OrderStatus.CONFIRMED,
+    OrderStatus.PREPARING,
+    OrderStatus.DELIVERING,
+    OrderStatus.DELIVERED,
+    OrderStatus.CANCELLED,
+  ]).optional(),
+  customerId: z.coerce.number().int().positive().optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+});
+export type OrderFilterInput = z.infer<typeof orderFilterSchema>;
 
 /** Kategoriya yaratish sxemasi */
 export const createCategorySchema = z.object({

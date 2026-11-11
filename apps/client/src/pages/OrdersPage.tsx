@@ -9,6 +9,10 @@ import { EmptyState } from '../components/common/EmptyState';
 import { BottomNav } from '../components/common/BottomNav';
 import { telegramService } from '../services/telegram.service';
 
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../services/api';
+
 export function OrdersPage() {
   const navigate = useNavigate();
   const { storeSlug } = useStore();
@@ -16,13 +20,33 @@ export function OrdersPage() {
   useTelegramBackButton();
 
   const storageKey = `flex_orders_${storeSlug}`;
-  let orders: OrderDTO[] = [];
+  let localOrders: OrderDTO[] = [];
   try {
     const saved = localStorage.getItem(storageKey);
-    if (saved) orders = JSON.parse(saved);
+    if (saved) localOrders = JSON.parse(saved);
   } catch {
-    orders = [];
+    localOrders = [];
   }
+
+  // Serverdan buyurtmalar ro'yxatini yuklash
+  const { data: serverOrders = [] } = useQuery<OrderDTO[]>({
+    queryKey: ['myOrders', storeSlug],
+    queryFn: () => api.get<OrderDTO[]>(`/shop/${storeSlug}/orders/my`).catch(() => []),
+    enabled: Boolean(storeSlug),
+    staleTime: 30_000,
+  });
+
+  // Server va lokal buyurtmalarni unikal birlashtirish
+  const orders = useMemo(() => {
+    const map = new Map<number, OrderDTO>();
+    for (const o of serverOrders) map.set(o.id, o);
+    for (const o of localOrders) {
+      if (!map.has(o.id)) map.set(o.id, o);
+    }
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [serverOrders, localOrders]);
 
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {

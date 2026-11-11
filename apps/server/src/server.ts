@@ -40,6 +40,8 @@ import { authRoutes } from './modules/auth/index.js';
 import { storeRoutes, adminStoreRoutes, shopStoreRoutes } from './modules/store/index.js';
 import { storeCategoryRouter, shopCategoryRouter } from './modules/category/index.js';
 import { storeProductRouter, shopProductRouter } from './modules/product/index.js';
+import { storeOrderRouter, shopOrderRouter } from './modules/order/index.js';
+import { integrationRoutes } from './modules/integration/index.js';
 
 // ── API Marshrutlari (v1) ──────────────────────
 app.use('/api/v1/auth', authRoutes);
@@ -48,12 +50,17 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/store', storeRoutes);
 app.use('/api/v1/store/categories', storeCategoryRouter);
 app.use('/api/v1/store/products', storeProductRouter);
+app.use('/api/v1/store/orders', storeOrderRouter);
 app.use('/api/v1/admin/stores', adminStoreRoutes);
 
 // Xaridor Mini App vitrinasi
 app.use('/api/v1/shop', shopStoreRoutes);
 app.use('/api/v1/shop/:storeSlug/categories', shopCategoryRouter);
 app.use('/api/v1/shop/:storeSlug/products', shopProductRouter);
+app.use('/api/v1/shop/:storeSlug/orders', shopOrderRouter);
+
+// Integratsiyalar va Webhooklar
+app.use('/api/v1/integrations', integrationRoutes);
 
 // ── 404 Handler ───────────────────────────────
 app.use((_req, res) => {

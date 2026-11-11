@@ -6,8 +6,9 @@ import { useStore } from '../context/StoreContext';
 import { useTelegramBackButton } from '../hooks/useTelegramBackButton';
 import { telegramService } from '../services/telegram.service';
 import { formatMoney } from '@flex/shared';
-import { PaymentMethod, DeliveryType, OrderStatus, PaymentStatus } from '@flex/shared';
-import type { OrderDTO } from '@flex/shared';
+import { PaymentMethod, DeliveryType } from '@flex/shared';
+import type { OrderDTO, CreateOrderInput } from '@flex/shared';
+import { api } from '../services/api';
 
 export function CheckoutPage() {
   const navigate = useNavigate();
@@ -68,37 +69,27 @@ export function CheckoutPage() {
     telegramService.haptic.medium();
 
     try {
-      // Yangi buyurtma obyekti
-      const orderNumber = Math.floor(1000 + Math.random() * 9000);
-      const newOrder: OrderDTO = {
-        id: Date.now(),
-        storeId: store?.id ?? 1,
-        orderNumber,
-        status: OrderStatus.PENDING,
-        subtotal,
-        deliveryFee,
-        discount: 0,
-        total: totalAmount,
+      const payload: CreateOrderInput = {
+        customerName: fullName.trim(),
+        customerPhone: phoneNumber.trim(),
         paymentMethod,
-        paymentStatus: PaymentStatus.UNPAID,
         deliveryType,
-        deliveryAddress: deliveryType === DeliveryType.DELIVERY ? address.trim() : 'Do\'kondan olib ketish',
-        customerNote: customerNote.trim() || null,
-        items: items.map((item, idx) => ({
-          id: idx + 1,
-          productName: item.product.name,
-          productPrice: item.product.price,
+        deliveryAddress: deliveryType === DeliveryType.DELIVERY ? address.trim() : undefined,
+        customerNote: customerNote.trim() || undefined,
+        items: items.map((item) => ({
+          productId: item.product.id,
           quantity: item.quantity,
-          total: item.product.price * item.quantity,
         })),
-        createdAt: new Date().toISOString(),
       };
 
-      // Lokal buyurtmalar ro'yxatiga saqlash (BOSQICH 4 da backend API ga ulanadi)
+      // Backend API ga haqiqiy buyurtma yuborish
+      const createdOrder = await api.post<OrderDTO>(`/shop/${storeSlug}/orders`, payload);
+
+      // Mahalliy xotiraga ham qo'shib qo'yamiz (offline ko'rish uchun)
       const storageKey = `flex_orders_${storeSlug}`;
       const existing = localStorage.getItem(storageKey);
       const orders: OrderDTO[] = existing ? JSON.parse(existing) : [];
-      orders.unshift(newOrder);
+      orders.unshift(createdOrder);
       localStorage.setItem(storageKey, JSON.stringify(orders));
 
       // Savatni tozalash
@@ -108,10 +99,11 @@ export function CheckoutPage() {
       telegramService.haptic.success();
 
       // Buyurtma tafsilotlari sahifasiga yo'naltirish
-      navigate(`/orders/${newOrder.id}`);
-    } catch {
+      navigate(`/orders/${createdOrder.id}`);
+    } catch (err: unknown) {
       telegramService.haptic.error();
-      setErrorMessage('Buyurtma yaratishda xatolik yuz berdi. Qayta urinib ko\'ring.');
+      const msg = err instanceof Error ? err.message : 'Buyurtma yaratishda xatolik yuz berdi';
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }

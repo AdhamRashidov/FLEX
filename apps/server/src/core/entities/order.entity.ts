@@ -16,6 +16,8 @@ export interface OrderEntity {
   id: number;
   storeId: number;
   customerId: number;
+  customerName?: string | null;
+  customerPhone?: string | null;
   orderNumber: number;
   status: OrderStatus;
   subtotal: number;

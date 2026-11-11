@@ -848,18 +848,18 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Buyurtmalar tarixi va tafsilotlar cheki (/orders, /orders/:id)
 - [x] Haptic Feedback (light, selection, medium, success, error) va BackButton integratsiyasi
 
-### BOSQICH 4: Buyurtmalar tizimi — KEYINGI BOSQICH ⏳
+### BOSQICH 4: Buyurtmalar tizimi — BAJARILDI ✅
 > Maqsad: Buyurtma lifecycle to'liq ishlashi
 
-- [ ] Buyurtma yaratish (savat → order, stock kamaytirish, tranzaksiya)
-- [ ] Buyurtma statuslarini o'zgartirish (admin)
-- [ ] Telegram bildirishnoma (yangi buyurtma → do'kon guruhiga)
-- [ ] Inline tugmalar (Qabul / Rad) → status o'zgartirish
-- [ ] Mijozga buyurtma holati xabari
-- [ ] Buyurtmalar tarixi (mijoz)
-- [ ] Buyurtmalar ro'yxati (admin)
+- [x] Buyurtma yaratish (savat → order, stock kamaytirish, atomik tranzaksiya)
+- [x] Buyurtma statuslarini o'zgartirish (admin va telegram callback)
+- [x] Telegram bildirishnoma (yangi buyurtma cheki → do'kon guruhiga/egasiga)
+- [x] Inline tugmalar (✅ Qabul qilish / ❌ Rad etish) → status o'zgartirish va stock tiklash
+- [x] Mijozga buyurtma holati xabari (avtomatik Telegram xabar)
+- [x] Buyurtmalar tarixi va tafsilotlar cheki (mijoz API + Frontend)
+- [x] Buyurtmalar ro'yxati (admin API)
 
-### BOSQICH 5: Ommaviy import — ~3 kun
+### BOSQICH 5: Ommaviy import — KEYINGI BOSQICH ⏳
 > Maqsad: Do'kondor tezda 100-1000 lab mahsulotni yuklashi
 
 - [ ] Excel/CSV import (fayl yuklash, parsing, bazaga yozish)

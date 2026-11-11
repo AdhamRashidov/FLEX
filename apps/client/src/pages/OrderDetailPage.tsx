@@ -6,6 +6,9 @@ import { formatMoney, formatDate } from '@flex/shared';
 import { OrderStatus, PaymentMethod } from '@flex/shared';
 import type { OrderDTO } from '@flex/shared';
 
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../services/api';
+
 export function OrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
@@ -13,16 +16,36 @@ export function OrderDetailPage() {
 
   useTelegramBackButton();
 
+  // 1. Avval mahalliy xotiradan qidirish (darhol ko'rsatish uchun)
   const storageKey = `flex_orders_${storeSlug}`;
-  let order: OrderDTO | null = null;
+  let localOrder: OrderDTO | null = null;
   try {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       const orders: OrderDTO[] = JSON.parse(saved);
-      order = orders.find((o) => String(o.id) === orderId) ?? null;
+      localOrder = orders.find((o) => String(o.id) === orderId) ?? null;
     }
   } catch {
-    order = null;
+    localOrder = null;
+  }
+
+  // 2. Serverdan yangi holatni yuklash
+  const { data: serverOrder, isLoading } = useQuery<OrderDTO | null>({
+    queryKey: ['orderDetail', storeSlug, orderId],
+    queryFn: () => api.get<OrderDTO>(`/shop/${storeSlug}/orders/${orderId}`).catch(() => null),
+    enabled: Boolean(storeSlug && orderId),
+    staleTime: 10_000,
+  });
+
+  const order = serverOrder || localOrder;
+
+  if (isLoading && !order) {
+    return (
+      <div className="min-h-screen bg-tg-bg p-6 flex flex-col items-center justify-center text-center">
+        <div className="w-8 h-8 border-2 border-tg-button border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-xs text-tg-hint">Buyurtma ma'lumotlari yuklanmoqda...</p>
+      </div>
+    );
   }
 
   if (!order) {
