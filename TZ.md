@@ -726,6 +726,19 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - Rasmdagi mahsulotni tanib olish (kelajakda)
 - Tovar nomlarini normalizatsiya qilish (masalan: "koka kola" → "Coca-Cola 1.5L")
 
+### 7.4 Rasmlar va Katalog Deduplikatsiyasi Qoidalari (Smart Media Architecture)
+1. **Shtrix-kod (EAN-13) bo'yicha mustaqillik:**
+   - 70gr va 90gr kabi turli o'lchamli tovarlar xalqaro shtrix-kod orqali 100% mustaqil tovar deb tan olinadi va o'zining mos rasmlariga ega bo'ladi.
+2. **Gibrid Smart Katalog (Amazon/Uzum modeli):**
+   - Do'kondor tovar qo'shayotganda yoki shtrix-kod skanerlaganda tizim Global Katalogdagi tayyor tiniq, studiyaviy rasmni taklif qiladi (Smart Suggestion).
+   - Tasdiqlanganda barcha do'konlar shu yagona rasm URLiga qaraydi (serverda ortiqcha 0 bayt disk sarflanadi).
+3. **Maxsus do'kon rasmlari (Custom Uploads):**
+   - Do'kondor o'z peshtaxtasidagi tovarini o'zi suratga olib yuklasa, bu rasm boshqa do'konlarga majburlanmaydi va aralashtirilmaydi.
+   - Agar internetdan bir xil rasm yuklansa, SHA-256 xesh orqali avtomatik deduplikatsiya qilinadi.
+4. **Reference-Count va Avto-tozalash (DRY Garbage Collection):**
+   - Bitta rasm 1 000 ta mahsulotga ulanishi mumkin (`reference_count = 1000`).
+   - Tovar o'chirilganda `reference_count -= 1` qilinadi. Hisoblagich 0 ga tushgandagina jismoniy fayl disk/R2 dan butunlay o'chiriladi.
+
 ---
 
 ## 8. Frontend sahifalar xaritasi

@@ -110,6 +110,13 @@ modules/product/
 - Middleware orqali `req.storeId` o'rnatiladi va barcha service/repository larga uzatiladi
 - Biror query'da `store_id` filtri yo'q bo'lsa — bu **BUG** hisoblanadi
 
+### Rasmlar va Media arxitekturasi (DRY & Smart Deduplication)
+- **Shtrix-kod (EAN-13) bo'yicha mustaqillik:** Har xil o'lchamli tovarlar (masalan Hot Lunch 70g va 90g) o'z shtrix-kodiga ega mustaqil tovar bo'lib, o'z rasmlariga ega bo'ladi.
+- **Gibrid Smart Katalog (Amazon/Uzum modeli):** Yangi tovar qo'shayotganda tizim `global_catalog`dagi tayyor tiniq rasmni taklif qiladi (Smart Suggestion). Do'kondor qabul qilsa, umumiy rasm URLiga ulanadi (0 bayt disk sarfi).
+- **Maxsus do'kon rasmi (Custom Uploads):** Do'kondor o'zi rasmga olib yuklagan maxsus surat boshqa do'konlarga majburlanmaydi va aralashtirilmaydi.
+- **SHA-256 deduplikatsiya:** Bir xil baytli fayllar qayta saqlanmaydi, `reference_count` oshiriladi.
+- **Avto-tozalash (Garbage Collection):** Tovar o'chirilganda `reference_count === 0` bo'lsa, fayl disk/R2 dan butunlay o'chiriladi.
+
 ### API dizayni
 - RESTful: `GET /api/v1/stores/:storeId/products`
 - Versiyalash: `/api/v1/...`
