@@ -113,6 +113,12 @@ app.use('/api/v1/shop/:storeSlug/orders', shopOrderRouter);
 // Integratsiyalar va Webhooklar
 app.use('/api/v1/integrations', integrationRoutes);
 
+// Universal Dinamik Multi-Bot Webhook (TZ 5.11 & 6.1: POST /api/v1/webhook/:identifier)
+import { TelegramWebhookController } from './modules/integration/telegram-webhook.js';
+const tgWebhookController = new TelegramWebhookController();
+app.post('/api/v1/webhook/:identifier', tgWebhookController.handleWebhook);
+
+
 // ── 404 Handler ───────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({

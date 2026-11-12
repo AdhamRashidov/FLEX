@@ -835,8 +835,9 @@ Yangi buyurtma tushganda do'konning maxsus Telegram guruhiga (yoki egasiga shaxs
 - [x] Store repository (`PgStoreRepository` — Raw SQL CRUD)
 - [x] Auth moduli (`/api/v1/auth/telegram`, `/api/v1/auth/me`)
 - [x] Store moduli (`/api/v1/store/profile`, `/api/v1/store/:storeId`, `/api/v1/shop/:storeSlug/info`, `/api/v1/admin/stores`)
-- [ ] Telegram bot webhook registration (dinamik)
-- [ ] Bot `/start` komandasi → Mini App tugmasi
+- [x] Telegram bot webhook registration (dinamik)
+- [x] Bot `/start` komandasi → Mini App tugmasi
+
 
 ### BOSQICH 2: Mahsulotlar va kategoriyalar — BAJARILDI ✅
 > Maqsad: Do'kon egasi mahsulotlarni qo'sha olishi va boshqarishi
