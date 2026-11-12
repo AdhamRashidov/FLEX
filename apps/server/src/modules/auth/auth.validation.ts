@@ -6,3 +6,11 @@ export const telegramAuthSchema = z.object({
 });
 
 export type TelegramAuthInput = z.infer<typeof telegramAuthSchema>;
+
+export const credentialsAuthSchema = z.object({
+  login: z.string().min(3, 'Telefon raqam yoki login kamida 3 belgidan iborat bo\'lishi kerak').max(100),
+  password: z.string().min(4, 'Parol kamida 4 belgidan iborat bo\'lishi kerak').max(100),
+});
+
+export type CredentialsAuthInput = z.infer<typeof credentialsAuthSchema>;
+

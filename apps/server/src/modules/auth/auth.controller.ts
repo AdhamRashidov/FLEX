@@ -24,6 +24,21 @@ export class AuthController {
   };
 
   /**
+   * POST /api/v1/auth/login
+   * Telefon / Login va Parol orqali Admin panelga kirish
+   */
+  credentialsLogin = async (req: Request, res: Response): Promise<void> => {
+    const { login, password } = req.body as { login: string; password: string };
+    const result = await this.authService.loginWithCredentials(login, password);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  };
+
+
+  /**
    * GET /api/v1/auth/me
    * Joriy profil ma'lumotlarini olish
    */

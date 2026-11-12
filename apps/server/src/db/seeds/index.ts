@@ -1,27 +1,41 @@
 import { pool, query, queryOne } from '../../infrastructure/database/pool.js';
 import { logger } from '../../common/logger/index.js';
+import { hashPassword } from '../../common/utils/password.js';
+
 
 async function seed() {
   logger.info('Seed', '🌱 Boshlang\'ich ma\'lumotlar kiritilmoqda...');
 
   try {
     // 1. Demo User (Do'kon egasi)
+    const demoPasswordHash = hashPassword('admin123');
     let owner = await queryOne<{ id: number }>(
-      'SELECT id FROM users WHERE telegram_id = $1',
-      [123456789]
+      'SELECT id FROM users WHERE telegram_id = $1 OR username = $2',
+      [123456789, 'hosil_admin']
     );
 
     if (!owner) {
       const res = await query<{ id: number }>(`
-        INSERT INTO users (telegram_id, first_name, last_name, username, language_code)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO users (telegram_id, first_name, last_name, username, phone, password_hash, language_code)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id
-      `, [123456789, 'Alisher', 'Navoiy', 'alisher_demo', 'uz']);
+      `, [123456789, 'Alisher', 'Navoiy', 'hosil_admin', '+998901234567', demoPasswordHash, 'uz']);
       owner = res.rows[0] ?? null;
-      logger.info('Seed', `👤 Demo foydalanuvchi yaratildi: ID ${owner?.id}`);
+      logger.info('Seed', `👤 Demo foydalanuvchi yaratildi: ID ${owner?.id} (login: hosil_admin, parol: admin123)`);
+    } else {
+      // Parol va telefonni yangilash
+      await query(`
+        UPDATE users
+        SET username = 'hosil_admin',
+            phone = '+998901234567',
+            password_hash = $1
+        WHERE id = $2
+      `, [demoPasswordHash, owner.id]);
+
     }
 
     if (!owner) throw new Error('Owner yaratib bo\'lmadi');
+
 
     // 2. Demo Store (Hosil Market)
     let store = await queryOne<{ id: number }>(

@@ -14,9 +14,11 @@ interface AdminAuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   loginWithToken: (token: string, storeId?: number) => Promise<void>;
+  loginWithCredentials: (login: string, password: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
   logout: () => void;
 }
+
 
 const AdminAuthContext = createContext<AdminAuthContextType | null>(null);
 
@@ -68,7 +70,29 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     await refreshProfile();
   };
 
+  const loginWithCredentials = async (login: string, password: string): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const res = await adminApi.post<{
+        token: string;
+        user: AuthUser;
+        store?: { id: number; name: string; slug: string };
+      }>('/auth/login', { login, password });
+
+      adminApi.setToken(res.token);
+      if (res.store) {
+        adminApi.setStoreId(res.store.id);
+      }
+      setToken(res.token);
+      setUser(res.user);
+      await refreshProfile();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = (): void => {
+
     adminApi.setToken(null);
     adminApi.setStoreId(null);
     setToken(null);
@@ -89,9 +113,11 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: Boolean(user && token),
         isLoading,
         loginWithToken,
+        loginWithCredentials,
         refreshProfile,
         logout,
       }}
+
     >
       {children}
     </AdminAuthContext.Provider>
