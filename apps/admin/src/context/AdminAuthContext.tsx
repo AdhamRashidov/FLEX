@@ -38,14 +38,21 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Fetch user profile
-      const userRes = await adminApi.get<{ user: AuthUser }>('/auth/me');
-      setUser(userRes.user);
+      const userRes = await adminApi.get<AuthUser | { user: AuthUser }>('/auth/me');
+      const profileUser = ('user' in userRes && userRes.user ? userRes.user : userRes) as AuthUser;
+      setUser(profileUser);
 
-      // Fetch store profile if store context is present
+      // Fetch store profile if owner/manager
       try {
-        const storeRes = await adminApi.get<{ store: StoreDTO }>('/store/profile');
-        setCurrentStore(storeRes.store);
-        adminApi.setStoreId(storeRes.store.id);
+        const stores = await adminApi.get<StoreDTO[]>('/store/profile');
+        if (Array.isArray(stores) && stores.length > 0) {
+          const activeStoreId = adminApi.getStoreId();
+          const targetStore = stores.find((s) => s.id === activeStoreId) || stores[0];
+          if (targetStore) {
+            setCurrentStore(targetStore);
+            adminApi.setStoreId(targetStore.id);
+          }
+        }
       } catch {
         // Store not set or empty
       }

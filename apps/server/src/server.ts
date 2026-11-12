@@ -80,7 +80,7 @@ import { integrationRoutes } from './modules/integration/index.js';
 import { catalogRoutes } from './modules/catalog/index.js';
 import { importRoutes } from './modules/import/index.js';
 import { financeRoutes } from './modules/finance/index.js';
-import { superRoutes } from './modules/super/index.js';
+import { superRoutes, bootstrapSuperAdmin } from './modules/super/index.js';
 
 // ── Global & Specific Rate Limiting ───────────
 app.use('/api', defaultRateLimiter);
@@ -130,21 +130,42 @@ app.use((_req, res) => {
 // ── Global Error Handler ──────────────────────
 app.use(errorHandler);
 
-// ── Server Ishga Tushirish ────────────────────
-const server = app.listen(config.port, () => {
-  logger.info('Server', `🚀 FLEX API ishga tushdi: http://localhost:${config.port}`);
-  logger.info('Server', `📊 Health check: http://localhost:${config.port}/api/health`);
-  logger.info('Server', `🌍 Muhit: ${config.env}`);
-});
+// ── Server Ishga Tushirish (onModuleInit / Bootstrap) ────────────
+let server: ReturnType<typeof app.listen>;
+
+async function startServer() {
+  try {
+    // 1. Super Admin avtomatik tekshirish va yaratish (.env dagi SUPERADMIN ma'lumotlari)
+    await bootstrapSuperAdmin();
+
+    // 2. HTTP Serverni ishga tushirish
+    server = app.listen(config.port, () => {
+      logger.info('Server', `🚀 FLEX API ishga tushdi: http://localhost:${config.port}`);
+      logger.info('Server', `📊 Health check: http://localhost:${config.port}/api/health`);
+      logger.info('Server', `🌍 Muhit: ${config.env}`);
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Noma\'lum xatolik';
+    logger.error('Server', `❌ Serverni ishga tushirishda kritik xatolik: ${message}`);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 // ── Graceful Shutdown ─────────────────────────
 const shutdown = async (signal: string) => {
   logger.info('Server', `${signal} signali qabul qilindi. Server xavfsiz to'xtatilmoqda...`);
-  server.close(async () => {
+  if (server) {
+    server.close(async () => {
+      await pool.end();
+      logger.info('Server', 'PostgreSQL pool yopildi. Server to\'xtatildi.');
+      process.exit(0);
+    });
+  } else {
     await pool.end();
-    logger.info('Server', 'PostgreSQL pool yopildi. Server to\'xtatildi.');
     process.exit(0);
-  });
+  }
 };
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));

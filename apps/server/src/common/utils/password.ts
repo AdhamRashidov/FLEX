@@ -1,27 +1,38 @@
-import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
 
 /**
- * Parolni xavfsiz heshlash (Salt + Scrypt)
- * Zero dependency — Node.js ning o'zida mavjud kriptografiya
+ * Parolni bcrypt yordamida xavfsiz heshlash
  */
-export function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16).toString('hex');
-  const derivedKey = crypto.scryptSync(password, salt, 64);
-  return `${salt}:${derivedKey.toString('hex')}`;
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, SALT_ROUNDS);
 }
 
 /**
- * Parol to'g'riligini xavfsiz tekshirish (Timing-attack ga qarshi himoyalangan)
+ * Sinxron heshlash (seed yoki bootstrap uchun)
  */
-export function verifyPassword(password: string, storedHash: string): boolean {
+export function hashPasswordSync(password: string): string {
+  return bcrypt.hashSync(password, SALT_ROUNDS);
+}
+
+/**
+ * Parolni bcrypt yordamida tekshirish (Timing-safe)
+ */
+export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
   try {
-    const [salt, key] = storedHash.split(':');
-    if (!salt || !key) return false;
+    return await bcrypt.compare(password, storedHash);
+  } catch {
+    return false;
+  }
+}
 
-    const keyBuffer = Buffer.from(key, 'hex');
-    const derivedKey = crypto.scryptSync(password, salt, 64);
-
-    return crypto.timingSafeEqual(keyBuffer, derivedKey);
+/**
+ * Sinxron tekshirish
+ */
+export function verifyPasswordSync(password: string, storedHash: string): boolean {
+  try {
+    return bcrypt.compareSync(password, storedHash);
   } catch {
     return false;
   }

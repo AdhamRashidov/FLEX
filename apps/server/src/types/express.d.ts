@@ -14,6 +14,7 @@ declare global {
         role: UserRole;
         firstName: string;
         username?: string | null;
+        isSuperAdmin?: boolean;
       };
     }
   }

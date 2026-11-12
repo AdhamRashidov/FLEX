@@ -6,7 +6,7 @@ import { PgUserRepository } from '../../infrastructure/repositories/pg-user.repo
 import { PgStoreRepository } from '../../infrastructure/repositories/pg-store.repository.js';
 import { UnauthorizedError, NotFoundError, ForbiddenError } from '../../common/errors/index.js';
 import { verifyPassword } from '../../common/utils/password.js';
-import { UserRole } from '@flex/shared';
+import { UserRole, normalizeUzPhone } from '@flex/shared';
 import type { UserDTO } from '@flex/shared';
 
 export interface AuthResult {
@@ -95,6 +95,7 @@ export class AuthService {
       userId: userEntity.id,
       telegramId: userEntity.telegramId,
       role,
+      isSuperAdmin: role === UserRole.SUPER_ADMIN,
       firstName: userEntity.firstName,
       username: userEntity.username,
     });
@@ -141,11 +142,8 @@ export class AuthService {
     password: string
   ): Promise<AuthResult & { store?: { id: number; name: string; slug: string } }> {
     const cleanLogin = login.trim();
-
-    // 1. Foydalanuvchini topish (username yoki phone bo'yicha)
-    const cleanPhone = cleanLogin.replace(/\D/g, '');
-    const phoneWithPlus =
-      cleanPhone.length >= 9 ? (cleanLogin.startsWith('+') ? cleanLogin : `+${cleanPhone}`) : null;
+    const normalizedPhone = normalizeUzPhone(cleanLogin);
+    const cleanDigits = cleanLogin.replace(/\D/g, '');
 
     const user = await queryOne<{
       id: string;
@@ -163,15 +161,15 @@ export class AuthService {
        WHERE LOWER(username) = LOWER($1)
           OR (phone IS NOT NULL AND (phone = $1 OR phone = $2 OR phone = $3))
        LIMIT 1`,
-      [cleanLogin, cleanPhone, phoneWithPlus || '']
+      [cleanLogin, normalizedPhone, cleanDigits ? `+${cleanDigits}` : cleanLogin]
     );
 
     if (!user || !user.password_hash) {
       throw new UnauthorizedError('Telefon/login yoki parol noto\'g\'ri');
     }
 
-    // 2. Parolni tekshirish
-    const isValid = verifyPassword(password, user.password_hash);
+    // 2. Parolni tekshirish (bcrypt compare)
+    const isValid = await verifyPassword(password, user.password_hash);
     if (!isValid) {
       throw new UnauthorizedError('Telefon/login yoki parol noto\'g\'ri');
     }
@@ -233,6 +231,7 @@ export class AuthService {
       userId,
       telegramId,
       role,
+      isSuperAdmin: role === UserRole.SUPER_ADMIN,
       firstName: user.first_name,
       username: user.username,
     });

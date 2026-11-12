@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@flex/shared": "*",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.0",
     "express": "^5.1.0",
@@ -27,6 +28,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.0",
     "@types/express": "^5.0.0",
     "@types/ioredis": "^4.28.10",

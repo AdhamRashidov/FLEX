@@ -16,6 +16,10 @@ const envSchema = z.object({
   REDIS_ENABLED: z.coerce.boolean().default(false),
   GEMINI_API_KEY: z.string().optional(),
   SUPER_ADMIN_IDS: z.string().default(''),
+  SUPERADMIN_USERNAME: z.string().default('adham_rashidov'),
+  SUPERADMIN_PASSWORD: z.string().optional(),
+  SUPERADMIN_PASWORD: z.string().optional(),
+  SUPERADMIN_PHONE: z.string().default('+998991500136'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -47,6 +51,11 @@ export const config = {
     .split(',')
     .map((s) => Number(s.trim()))
     .filter((n) => !isNaN(n) && n > 0),
+  superAdmin: {
+    username: parsed.data.SUPERADMIN_USERNAME,
+    password: parsed.data.SUPERADMIN_PASSWORD || parsed.data.SUPERADMIN_PASWORD || 'Adham123!',
+    phone: parsed.data.SUPERADMIN_PHONE,
+  },
   cors: { origins: parsed.data.CORS_ORIGINS.split(',').map((s) => s.trim()) },
   isDev: parsed.data.NODE_ENV === 'development',
   isProd: parsed.data.NODE_ENV === 'production',

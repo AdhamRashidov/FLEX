@@ -21,11 +21,12 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction): v
   const payload = verifyToken(token);
 
   req.user = {
-    id: payload.userId,
-    telegramId: payload.telegramId,
+    id: payload.userId || payload.sub,
+    telegramId: payload.telegramId ?? 0,
     role: payload.role,
-    firstName: payload.firstName,
+    firstName: payload.username ?? 'User',
     username: payload.username ?? null,
+    isSuperAdmin: payload.isSuperAdmin ?? (payload.role === 'super_admin'),
   };
 
   next();
@@ -43,11 +44,12 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction): 
       try {
         const payload = verifyToken(token);
         req.user = {
-          id: payload.userId,
-          telegramId: payload.telegramId,
+          id: payload.userId || payload.sub,
+          telegramId: payload.telegramId ?? 0,
           role: payload.role,
-          firstName: payload.firstName,
+          firstName: payload.username ?? 'User',
           username: payload.username ?? null,
+          isSuperAdmin: payload.isSuperAdmin ?? (payload.role === 'super_admin'),
         };
       } catch {
         // Token xato bo'lsa ham mehmon sifatida o'tkaziladi

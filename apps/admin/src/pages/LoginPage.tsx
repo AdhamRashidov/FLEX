@@ -10,6 +10,7 @@ import {
   ShieldAlert,
   ArrowRight,
   Send,
+  Crown,
 } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 import { adminApi } from '../services/api';
@@ -211,15 +212,31 @@ export function LoginPage() {
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={fillDemoCredentials}
-          className="w-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/70 text-slate-300 font-medium text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-2 group"
-        >
-          <Store className="w-4 h-4 text-emerald-400" />
-          <span>Demo egasi hisobini to'ldirish (<code>hosil_admin</code>)</span>
-          <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition" />
-        </button>
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() => {
+              setLogin('adham_rashidov');
+              setPassword('Adham123!');
+              setError(null);
+            }}
+            className="w-full bg-amber-950/40 hover:bg-amber-900/50 border border-amber-800/60 text-amber-300 font-medium text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-2 group"
+          >
+            <Crown className="w-4 h-4 text-amber-400" />
+            <span>Super Admin (Big Boss) hisobi</span>
+            <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 transition" />
+          </button>
+
+          <button
+            type="button"
+            onClick={fillDemoCredentials}
+            className="w-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/70 text-slate-300 font-medium text-xs py-2.5 rounded-xl transition flex items-center justify-center gap-2 group"
+          >
+            <Store className="w-4 h-4 text-emerald-400" />
+            <span>Do'kon egasi demo (<code>hosil_admin</code>)</span>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition" />
+          </button>
+        </div>
       </div>
     </div>
   );
