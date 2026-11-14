@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { loginIdentifierSchema, strongPasswordSchema } from '@flex/shared';
+import { loginIdentifierSchema, strongPasswordSchema, registerOwnerSchema } from '@flex/shared';
+
+export { registerOwnerSchema };
+export type { RegisterOwnerInput } from '@flex/shared';
 
 export const telegramAuthSchema = z.object({
   initData: z.string().min(1, 'Telegram initData parametri talab qilinadi'),

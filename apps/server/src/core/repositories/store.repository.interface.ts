@@ -7,7 +7,7 @@ export interface CreateStoreData {
   slug: string;
   description?: string | null;
   phone?: string | null;
-  botToken: string;
+  botToken?: string | null;
   botUsername?: string | null;
   webappUrl?: string | null;
   deliveryEnabled?: boolean;

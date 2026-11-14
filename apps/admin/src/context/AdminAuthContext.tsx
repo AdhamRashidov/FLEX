@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import type { UserDTO, UserRole, StoreDTO } from '@flex/shared';
+import type { UserDTO, UserRole, StoreDTO, RegisterOwnerInput } from '@flex/shared';
 import { adminApi } from '../services/api';
 
 interface AuthUser extends UserDTO {
@@ -15,6 +15,7 @@ interface AdminAuthContextType {
   isLoading: boolean;
   loginWithToken: (token: string, storeId?: number) => Promise<void>;
   loginWithCredentials: (login: string, password: string) => Promise<void>;
+  registerOwner: (data: RegisterOwnerInput) => Promise<void>;
   refreshProfile: () => Promise<void>;
   logout: () => void;
 }
@@ -98,8 +99,28 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = (): void => {
+  const registerOwner = async (data: RegisterOwnerInput): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const res = await adminApi.post<{
+        token: string;
+        user: AuthUser;
+        store: { id: number; name: string; slug: string };
+      }>('/auth/register', data);
 
+      adminApi.setToken(res.token);
+      if (res.store) {
+        adminApi.setStoreId(res.store.id);
+      }
+      setToken(res.token);
+      setUser(res.user);
+      await refreshProfile();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = (): void => {
     adminApi.setToken(null);
     adminApi.setStoreId(null);
     setToken(null);
@@ -121,10 +142,10 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         loginWithToken,
         loginWithCredentials,
+        registerOwner,
         refreshProfile,
         logout,
       }}
-
     >
       {children}
     </AdminAuthContext.Provider>

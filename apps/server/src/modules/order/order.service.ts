@@ -398,7 +398,7 @@ export class OrderService {
         [updated.customerId]
       );
 
-      if (store && customerUser?.telegram_id) {
+      if (store && store.botToken && customerUser?.telegram_id) {
         await telegramNotificationService.notifyCustomerStatusChange(
           store.botToken,
           customerUser.telegram_id,

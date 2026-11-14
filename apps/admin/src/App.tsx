@@ -48,7 +48,8 @@ export function App() {
       <AdminAuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage defaultTab="login" />} />
+            <Route path="/register" element={<LoginPage defaultTab="register" />} />
 
             <Route
               path="/"

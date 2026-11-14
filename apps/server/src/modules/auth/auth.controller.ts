@@ -37,6 +37,19 @@ export class AuthController {
     });
   };
 
+  /**
+   * POST /api/v1/auth/register
+   * Yangi do'kon egasi ro'yxatdan o'tishi
+   */
+  register = async (req: Request, res: Response): Promise<void> => {
+    const result = await this.authService.registerOwner(req.body);
+
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  };
+
 
   /**
    * GET /api/v1/auth/me

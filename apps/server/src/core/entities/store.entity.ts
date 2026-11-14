@@ -8,7 +8,7 @@ export interface StoreEntity {
   description?: string | null;
   logoUrl?: string | null;
   phone?: string | null;
-  botToken: string;
+  botToken?: string | null;
   botUsername?: string | null;
   webappUrl?: string | null;
   workingHours?: Record<string, { open: string; close: string }> | null;

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from './auth.controller.js';
 import { validateBody, requireAuth } from '../../common/middlewares/index.js';
-import { telegramAuthSchema, credentialsAuthSchema } from './auth.validation.js';
+import { telegramAuthSchema, credentialsAuthSchema, registerOwnerSchema } from './auth.validation.js';
 
 const router = Router();
 const controller = new AuthController();
@@ -11,6 +11,9 @@ router.post('/telegram', validateBody(telegramAuthSchema), controller.telegramLo
 
 // Ommaviy: Telefon/Login va Parol bilan avtorizatsiya (Admin Panel)
 router.post('/login', validateBody(credentialsAuthSchema), controller.credentialsLogin);
+
+// Ommaviy: Yangi do'kon egasi ro'yxatdan o'tishi (Register)
+router.post('/register', validateBody(registerOwnerSchema), controller.register);
 
 // Himoyalangan: Joriy profil
 router.get('/me', requireAuth, controller.getMe);

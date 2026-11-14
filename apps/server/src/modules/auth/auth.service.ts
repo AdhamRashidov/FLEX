@@ -1,13 +1,13 @@
 import { config } from '../../config/index.js';
 import { validateTelegramInitData } from '../../common/utils/telegram-auth.js';
 import { generateToken } from '../../common/utils/jwt.js';
-import { queryOne } from '../../infrastructure/database/pool.js';
+import { queryOne, tx } from '../../infrastructure/database/pool.js';
 import { PgUserRepository } from '../../infrastructure/repositories/pg-user.repository.js';
 import { PgStoreRepository } from '../../infrastructure/repositories/pg-store.repository.js';
-import { UnauthorizedError, NotFoundError, ForbiddenError } from '../../common/errors/index.js';
-import { verifyPassword } from '../../common/utils/password.js';
+import { UnauthorizedError, NotFoundError, ForbiddenError, ConflictError } from '../../common/errors/index.js';
+import { verifyPassword, hashPassword } from '../../common/utils/password.js';
 import { UserRole, normalizeUzPhone } from '@flex/shared';
-import type { UserDTO } from '@flex/shared';
+import type { UserDTO, RegisterOwnerInput } from '@flex/shared';
 
 export interface AuthResult {
   token: string;
@@ -36,7 +36,7 @@ export class AuthService {
       if (!store) {
         throw new NotFoundError(`Do'kon (${storeSlug})`);
       }
-      botToken = store.botToken;
+      botToken = store.botToken ?? undefined;
     }
 
     if (!botToken) {
@@ -248,6 +248,125 @@ export class AuthService {
         role,
       },
       store: storeInfo,
+    };
+  }
+
+  /**
+   * Yangi do'kon egasi ro'yxatdan o'tishi (Register Owner & Store)
+   */
+  async registerOwner(
+    input: RegisterOwnerInput
+  ): Promise<AuthResult & { store: { id: number; name: string; slug: string } }> {
+    const cleanPhone = normalizeUzPhone(input.phone);
+    const cleanUsername = input.username.toLowerCase().trim();
+
+    // 1. Telefon yoki username band emasligini tekshirish
+    const existing = await queryOne<{ id: string }>(
+      `SELECT id FROM users
+       WHERE LOWER(username) = LOWER($1)
+          OR (phone IS NOT NULL AND phone = $2)
+       LIMIT 1`,
+      [cleanUsername, cleanPhone]
+    );
+
+    if (existing) {
+      throw new ConflictError("Ushbu telefon raqami yoki username allaqachon ro'yxatdan o'tgan");
+    }
+
+    // 2. Slug yaratish va unikal qilish
+    const slugify = (text: string) =>
+      text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+
+    let baseSlug = input.storeSlug ? slugify(input.storeSlug) : slugify(input.storeName);
+    if (!baseSlug || baseSlug.length < 2) {
+      baseSlug = `store-${Date.now().toString().slice(-4)}`;
+    }
+
+    let finalSlug = baseSlug;
+    let counter = 1;
+    while (await this.storeRepo.findBySlug(finalSlug)) {
+      finalSlug = `${baseSlug}-${counter++}`;
+    }
+
+    // 3. Parolni bcrypt bilan xavfsiz heshlash
+    const passwordHash = await hashPassword(input.password);
+
+    // 4. Tranzaksiya bilan foydalanuvchi, do'kon va staff_member yaratish
+    const result = await tx(async (client) => {
+      // 4a. User yaratish
+      const userRes = await client.query<{ id: string }>(
+        `INSERT INTO users (
+           first_name, last_name, username, phone, password_hash, is_super_admin, language_code
+         )
+         VALUES ($1, $2, $3, $4, $5, false, 'uz')
+         RETURNING id`,
+        [
+          input.firstName.trim(),
+          input.lastName?.trim() ?? null,
+          cleanUsername,
+          cleanPhone,
+          passwordHash,
+        ]
+      );
+      const userRow = userRes.rows[0];
+      if (!userRow) throw new Error("Foydalanuvchi yaratib bo'lmadi");
+      const userId = Number(userRow.id);
+
+      // 4b. Store yaratish
+      const storeRes = await client.query<{ id: string; name: string; slug: string }>(
+        `INSERT INTO stores (
+           owner_id, name, slug, phone, status, delivery_enabled
+         )
+         VALUES ($1, $2, $3, $4, 'active', true)
+         RETURNING id, name, slug`,
+        [userId, input.storeName.trim(), finalSlug, cleanPhone]
+      );
+      const storeRow = storeRes.rows[0];
+      if (!storeRow) throw new Error("Do'kon yaratib bo'lmadi");
+      const storeId = Number(storeRow.id);
+
+      // 4c. Staff member (owner) biriktirish
+      await client.query(
+        `INSERT INTO staff_members (store_id, user_id, role, is_active)
+         VALUES ($1, $2, 'owner', true)`,
+        [storeId, userId]
+      );
+
+      return {
+        userId,
+        store: { id: storeId, name: storeRow.name, slug: storeRow.slug },
+      };
+    });
+
+    // 5. JWT token generatsiya qilish
+    const token = generateToken({
+      userId: result.userId,
+      role: UserRole.OWNER,
+      isSuperAdmin: false,
+      firstName: input.firstName.trim(),
+      username: cleanUsername,
+    });
+
+    return {
+      token,
+      user: {
+        id: result.userId,
+        telegramId: 0,
+        firstName: input.firstName.trim(),
+        lastName: input.lastName?.trim() ?? null,
+        username: cleanUsername,
+        photoUrl: null,
+        role: UserRole.OWNER,
+      },
+      store: result.store,
     };
   }
 }

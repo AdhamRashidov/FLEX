@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PaymentMethod, DeliveryType, ProductUnit, OrderStatus, TransactionType } from '../enums/index.js';
+import { uzPhoneSchema, usernameSchema, strongPasswordSchema } from '../validators/index.js';
 
 /** Paginatsiya so'rov parametrlari */
 export const paginationSchema = z.object({
@@ -192,5 +193,22 @@ export const updateStoreStatusSchema = z.object({
   reason: z.string().max(500).optional(),
 });
 export type UpdateStoreStatusInput = z.infer<typeof updateStoreStatusSchema>;
+
+/** Do'kon egasi ro'yxatdan o'tish (Register) sxemasi */
+export const registerOwnerSchema = z.object({
+  firstName: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi shart").max(100),
+  lastName: z.string().max(100).optional(),
+  phone: uzPhoneSchema,
+  username: usernameSchema,
+  password: strongPasswordSchema,
+  storeName: z.string().min(2, "Do'kon nomi kamida 2 ta belgidan iborat bo'lishi shart").max(200),
+  storeSlug: z
+    .string()
+    .min(2, "Do'kon havolasi kamida 2 ta belgidan iborat bo'lishi shart")
+    .max(50)
+    .regex(/^[a-z0-9_-]+$/, "Do'kon havolasi faqat kichik lotin harflari, raqamlar va chiziqcha bo'lishi mumkin")
+    .optional(),
+});
+export type RegisterOwnerInput = z.infer<typeof registerOwnerSchema>;
 
 

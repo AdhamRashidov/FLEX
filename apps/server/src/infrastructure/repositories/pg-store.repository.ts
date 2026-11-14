@@ -11,7 +11,7 @@ interface StoreDbRow {
   description: string | null;
   logo_url: string | null;
   phone: string | null;
-  bot_token: string;
+  bot_token: string | null;
   bot_username: string | null;
   webapp_url: string | null;
   working_hours: Record<string, { open: string; close: string }> | null;
@@ -102,7 +102,7 @@ export class PgStoreRepository implements IStoreRepository {
         data.slug.toLowerCase().trim(),
         data.description ?? null,
         data.phone ?? null,
-        data.botToken.trim(),
+        data.botToken?.trim() ?? null,
         data.botUsername?.trim() ?? null,
         data.webappUrl?.trim() ?? null,
         data.deliveryEnabled ?? true,
@@ -143,7 +143,7 @@ export class PgStoreRepository implements IStoreRepository {
     }
     if (data.botToken !== undefined) {
       fields.push(`bot_token = $${paramIndex++}`);
-      params.push(data.botToken.trim());
+      params.push(data.botToken ? data.botToken.trim() : null);
     }
     if (data.botUsername !== undefined) {
       fields.push(`bot_username = $${paramIndex++}`);
