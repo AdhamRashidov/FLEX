@@ -21,17 +21,20 @@
     "migrate:create": "npm run migrate:create -w @flex/server",
     "seed": "npm run seed -w @flex/server",
     "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "start": "npm run start -w @flex/server",
+    "start:server": "npm run start -w @flex/server",
     "clean": "rimraf apps/*/dist apps/*/node_modules packages/*/dist packages/*/node_modules node_modules"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "devDependencies": {
+  "dependencies": {
     "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  },
+  "devDependencies": {
     "concurrently": "^10.0.7",
     "prettier": "^3.4.0",
-    "rimraf": "^6.0.0",
-    "typescript": "^5.7.0"
+    "rimraf": "^6.0.0"
   }
 }
