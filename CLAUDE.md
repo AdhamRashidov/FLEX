@@ -124,9 +124,10 @@ modules/product/
 - Muvaffaqiyat formati: `{ success: true, data: {...}, meta: { pagination: {...} } }`
 - Paginatsiya: `?page=1&limit=20` (default limit: 20, max: 100)
 
-### Git konvensiyalari
-- **Asosiy Dev muhit:** `adham` (barcha yangi kodlar, ishlab chiqish va faol commitlar doimiy shu branchda bo'ladi)
-- **Production muhit:** `main` (faqatgina hamma narsa toza va to'liq sinovdan o'tgandan keyin `adham` dan `main` ga merge qilinadi)
+### Git konvensiyalari (QAT'IY QOIDA!)
+- **Yagona ishchi branch:** `adham` — AI agent barcha ishlarni, kod yozishni, testlashni va commit/push amallarini **FAQAT va FAQAT `adham`** filialida bajaradi.
+- **`main` filialiga QAT'IY CHEKLOV:** AI agent hech qachon `main` filialiga o'tmaydi (`checkout`), unga `merge` qilmaydi va unga `push` qilmaydi!
+- **Production release:** `adham` dan `main` ga merge va production reliz qilish huquqi **100% faqat loyiha egasining (foydalanuvchining) o'ziga tegishli** bo'lib, har doim foydalanuvchi tomonidan qo'lda amalga oshiriladi.
 - **Commit xabarlari:** Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`)
 
 ### Kodga izoh yozish
