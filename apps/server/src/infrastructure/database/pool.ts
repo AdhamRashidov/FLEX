@@ -4,11 +4,14 @@ import { logger } from '../../common/logger/index.js';
 
 const { Pool } = pg;
 
+const isSsl = config.db.url.includes('sslmode=require') || config.db.url.includes('neon.tech');
+
 export const pool = new Pool({
   connectionString: config.db.url,
   max: 20,
   idleTimeoutMillis: 30_000,
-  connectionTimeoutMillis: 5_000,
+  connectionTimeoutMillis: 10_000,
+  ssl: isSsl ? { rejectUnauthorized: false } : undefined,
 });
 
 // Pool xatolarini ushlash (server qulamasligi uchun)
